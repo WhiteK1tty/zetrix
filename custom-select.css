@@ -1,0 +1,168 @@
+/* ===== CUSTOM SELECT ===== */
+
+.cselect-wrap {
+  position: relative;
+  user-select: none;
+}
+
+/* Trigger button */
+.cselect-trigger {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 0.92rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  color: #e2e2e8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  outline: none;
+  text-align: left;
+}
+
+.cselect-trigger:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+  background: rgba(124, 58, 237, 0.04);
+}
+
+.cselect-wrap.open .cselect-trigger {
+  border-color: rgba(124, 58, 237, 0.6);
+  background: rgba(124, 58, 237, 0.06);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.cselect-value {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cselect-arrow {
+  display: flex;
+  align-items: center;
+  color: #6b6b80;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s;
+}
+
+.cselect-wrap.open .cselect-arrow {
+  color: #a78bfa;
+}
+
+/* Dropdown */
+.cselect-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #13131e;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  border-radius: 14px;
+  padding: 6px;
+  z-index: 500;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(124, 58, 237, 0.08);
+  overflow: hidden;
+
+  /* Hidden by default */
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cselect-wrap.open .cselect-dropdown {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+/* Option */
+.cselect-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #8b8ba0;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cselect-option:hover {
+  background: rgba(124, 58, 237, 0.1);
+  color: #e2e2e8;
+}
+
+.cselect-option.selected {
+  color: #fff;
+  background: rgba(124, 58, 237, 0.12);
+}
+
+.cselect-option-check {
+  display: flex;
+  align-items: center;
+  color: #7c3aed;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.cselect-option.selected .cselect-option-check {
+  opacity: 1;
+}
+
+/* Plan badges inside options */
+.cselect-option[data-value="Базовый"]  { }
+.cselect-option[data-value="Премиум"]  { }
+.cselect-option[data-value="VIP"]      { }
+
+.cselect-option[data-value="VIP"].selected {
+  background: rgba(234, 179, 8, 0.08);
+}
+
+.cselect-option[data-value="VIP"].selected .cselect-option-check {
+  color: #fbbf24;
+}
+
+.cselect-option[data-value="VIP"]:hover {
+  background: rgba(234, 179, 8, 0.06);
+  color: #fbbf24;
+}
+
+/* Scrollable if many options */
+.cselect-dropdown {
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+}
+
+.cselect-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cselect-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cselect-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 100px;
+}
+
+/* Hide native select arrow (fallback) */
+.form-select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: none !important;
+}

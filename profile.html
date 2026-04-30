@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Профиль — Zetrix</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="animations.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="profile-page">
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon" id="logoIcon"></span>
+        <span class="logo-text">Zetrix</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="index.html#features">Функции</a></li>
+        <li><a href="index.html#pricing">Цены</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="btn-ghost nav-logout" onclick="logout()">
+          <span id="iconLogout"></span> Выйти
+        </a>
+        <!-- Shown only for ADMINSYSTEM via JS -->
+        <a href="admin.html" class="btn-outline" id="adminNavBtn" style="display:none;font-size:0.8rem;padding:7px 14px">
+          <span id="adminNavIcon"></span> Панель
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="profile-wrap">
+
+    <!-- SIDEBAR -->
+    <aside class="profile-sidebar">
+      <div class="profile-avatar">
+        <div class="avatar-circle">
+          <span id="avatarLetter">Z</span>
+        </div>
+        <div class="avatar-info">
+          <div class="avatar-name" id="profileUsername">ZetrixUser</div>
+          <div class="avatar-plan" id="profilePlan">
+            <span class="plan-dot"></span> Базовый план
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link active" onclick="switchTab('overview', this)">
+          <span class="slink-icon" id="sIcon1"></span> Обзор
+        </a>
+        <a href="#" class="sidebar-link" onclick="switchTab('activate', this)">
+          <span class="slink-icon" id="sIcon2"></span> Активация ключа
+        </a>
+        <a href="#" class="sidebar-link" onclick="switchTab('subscription', this)">
+          <span class="slink-icon" id="sIcon3"></span> Подписка
+        </a>
+        <a href="#" class="sidebar-link" onclick="switchTab('settings', this)">
+          <span class="slink-icon" id="sIcon4"></span> Настройки
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="profile-main">
+
+      <!-- OVERVIEW -->
+      <div class="tab-content active" id="tab-overview">
+        <div class="profile-section-title">Обзор аккаунта</div>
+
+        <div class="overview-cards">
+          <div class="overview-card">
+            <div class="ov-icon" id="ovIcon1"></div>
+            <div class="ov-info">
+              <div class="ov-label">Текущий план</div>
+              <div class="ov-value" id="ovPlan">Базовый</div>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="ov-icon" id="ovIcon2"></div>
+            <div class="ov-info">
+              <div class="ov-label">Действует до</div>
+              <div class="ov-value" id="ovExpiry">—</div>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="ov-icon" id="ovIcon3"></div>
+            <div class="ov-info">
+              <div class="ov-label">Ключей активировано</div>
+              <div class="ov-value" id="ovKeys">0</div>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="ov-icon" id="ovIcon4"></div>
+            <div class="ov-info">
+              <div class="ov-label">Версия клиента</div>
+              <div class="ov-value">4.0.1</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="download-block">
+          <div class="download-info">
+            <div class="download-title">Zetrix Client v4.0.1</div>
+            <div class="download-sub">Поддержка 1.8 — 1.20.x · Обновлено: 28 апр 2026</div>
+          </div>
+          <button class="btn-primary" onclick="alert('Скачивание доступно только с активным ключом!')">
+            <span id="dlIcon"></span> Скачать
+          </button>
+        </div>
+
+        <div class="activity-block">
+          <div class="activity-title">
+            <span id="actIcon"></span> Последняя активность
+          </div>
+          <div class="activity-list" id="activityList">
+            <div class="activity-empty">Активность пока отсутствует</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVATE KEY -->
+      <div class="tab-content" id="tab-activate">
+        <div class="profile-section-title">Активация ключа</div>
+        <p class="profile-section-sub">Введите лицензионный ключ, полученный после оплаты</p>
+
+        <div class="key-activate-card">
+          <div class="key-icon-big" id="keyIconBig"></div>
+          <h3 class="key-card-title">Введите ваш ключ</h3>
+          <p class="key-card-sub">Формат: ZETRIX-XXXXX-XXXXX-XXXXX</p>
+
+          <form class="key-form" onsubmit="activateKey(event)">
+            <div class="key-input-wrap">
+              <input
+                type="text"
+                class="key-input"
+                id="keyInput"
+                placeholder="ZETRIX-XXXXX-XXXXX-XXXXX"
+                maxlength="23"
+                oninput="formatKey(this)"
+                autocomplete="off"
+                spellcheck="false"
+              />
+            </div>
+            <div class="key-result" id="keyResult"></div>
+            <button type="submit" class="btn-primary large full key-submit">
+              <span id="unlockIcon"></span> Активировать ключ
+            </button>
+          </form>
+        </div>
+
+        <div class="keys-history">
+          <div class="keys-history-title">История активаций</div>
+          <div id="keysHistoryList">
+            <div class="activity-empty">Нет активированных ключей</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBSCRIPTION -->
+      <div class="tab-content" id="tab-subscription">
+        <div class="profile-section-title">Подписка</div>
+        <p class="profile-section-sub">Управляй своим планом и продлевай подписку</p>
+
+        <div class="sub-current">
+          <div class="sub-current-info">
+            <div class="sub-badge" id="subBadge">Базовый</div>
+            <div class="sub-expiry">Действует до: <strong id="subExpiry">—</strong></div>
+          </div>
+          <a href="index.html#pricing" class="btn-primary">Улучшить план</a>
+        </div>
+
+        <div class="pricing-grid sub-plans">
+          <div class="price-card">
+            <div class="price-tier">Базовый</div>
+            <div class="price-amount"><span class="price-currency">₽</span>299<span class="price-period">/мес</span></div>
+            <ul class="price-features">
+              <li><span class="pf-check" id="spc1"></span> KillAura</li>
+              <li><span class="pf-check" id="spc2"></span> Speed</li>
+              <li><span class="pf-check" id="spc3"></span> ESP</li>
+              <li><span class="pf-check" id="spc4"></span> Поддержка 1.8–1.20</li>
+              <li class="disabled"><span class="pf-x" id="spx1"></span> AntiCheat Bypass</li>
+              <li class="disabled"><span class="pf-x" id="spx2"></span> Приоритетная поддержка</li>
+            </ul>
+            <button class="btn-outline full" onclick="alert('Перейдите на страницу оплаты')">Выбрать</button>
+          </div>
+          <div class="price-card featured">
+            <div class="price-badge">Популярный</div>
+            <div class="price-tier">Премиум</div>
+            <div class="price-amount"><span class="price-currency">₽</span>599<span class="price-period">/мес</span></div>
+            <ul class="price-features">
+              <li><span class="pf-check" id="spc5"></span> Все функции Базового</li>
+              <li><span class="pf-check" id="spc6"></span> AntiCheat Bypass</li>
+              <li><span class="pf-check" id="spc7"></span> Fly & Scaffold</li>
+              <li><span class="pf-check" id="spc8"></span> AimAssist</li>
+              <li><span class="pf-check" id="spc9"></span> Частые обновления</li>
+              <li class="disabled"><span class="pf-x" id="spx3"></span> Приоритетная поддержка</li>
+            </ul>
+            <button class="btn-primary full" onclick="alert('Перейдите на страницу оплаты')">Выбрать</button>
+          </div>
+          <div class="price-card">
+            <div class="price-tier">VIP</div>
+            <div class="price-amount"><span class="price-currency">₽</span>999<span class="price-period">/мес</span></div>
+            <ul class="price-features">
+              <li><span class="pf-check" id="spc10"></span> Все функции Премиум</li>
+              <li><span class="pf-check" id="spc11"></span> Приоритетная поддержка</li>
+              <li><span class="pf-check" id="spc12"></span> Ранний доступ</li>
+              <li><span class="pf-check" id="spc13"></span> Discord роль VIP</li>
+              <li><span class="pf-check" id="spc14"></span> Бета-версии</li>
+              <li><span class="pf-check" id="spc15"></span> Персональные настройки</li>
+            </ul>
+            <button class="btn-outline full" onclick="alert('Перейдите на страницу оплаты')">Выбрать</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="tab-content" id="tab-settings">
+        <div class="profile-section-title">Настройки аккаунта</div>
+
+        <div class="settings-block">
+          <div class="settings-group-title">Основная информация</div>
+          <form class="settings-form" onsubmit="saveSettings(event)">
+            <div class="form-group">
+              <label class="form-label">Никнейм</label>
+              <div class="input-wrap">
+                <span class="input-icon" id="stIconUser"></span>
+                <input type="text" class="form-input" id="settingsUsername" placeholder="your_nickname" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <div class="input-wrap">
+                <span class="input-icon" id="stIconMail"></span>
+                <input type="email" class="form-input" id="settingsEmail" placeholder="example@mail.com" />
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">Сохранить изменения</button>
+          </form>
+        </div>
+
+        <div class="settings-block">
+          <div class="settings-group-title">Смена пароля</div>
+          <form class="settings-form" onsubmit="changePassword(event)">
+            <div class="form-group">
+              <label class="form-label">Текущий пароль</label>
+              <div class="input-wrap">
+                <span class="input-icon" id="stIconLock1"></span>
+                <input type="password" class="form-input" id="currentPass" placeholder="••••••••" />
+                <button type="button" class="input-toggle" id="stToggle1" onclick="togglePassword('currentPass', this)"></button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Новый пароль</label>
+              <div class="input-wrap">
+                <span class="input-icon" id="stIconLock2"></span>
+                <input type="password" class="form-input" id="newPass" placeholder="Минимум 8 символов" />
+                <button type="button" class="input-toggle" id="stToggle2" onclick="togglePassword('newPass', this)"></button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Подтвердите новый пароль</label>
+              <div class="input-wrap">
+                <span class="input-icon" id="stIconLock3"></span>
+                <input type="password" class="form-input" id="confirmNewPass" placeholder="Повторите пароль" />
+                <button type="button" class="input-toggle" id="stToggle3" onclick="togglePassword('confirmNewPass', this)"></button>
+              </div>
+            </div>
+            <button type="submit" class="btn-outline">Сменить пароль</button>
+          </form>
+        </div>
+
+        <div class="settings-block danger-zone">
+          <div class="settings-group-title danger-title">Опасная зона</div>
+          <p class="danger-desc">Удаление аккаунта необратимо. Все данные будут потеряны.</p>
+          <button class="btn-danger" onclick="confirmDelete()">
+            <span id="trashIcon"></span> Удалить аккаунт
+          </button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="icons.js"></script>
+  <script src="transitions.js"></script>
+  <script src="modal.js"></script>
+  <script type="module" src="auth.js"></script>
+  <script type="module" src="profile.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('logoIcon').innerHTML   = Icons.logo;
+      document.getElementById('iconLogout').innerHTML = Icons.logout;
+      document.getElementById('sIcon1').innerHTML     = Icons.home;
+      document.getElementById('sIcon2').innerHTML     = Icons.key;
+      document.getElementById('sIcon3').innerHTML     = Icons.gem;
+      document.getElementById('sIcon4').innerHTML     = Icons.settings;
+      document.getElementById('ovIcon1').innerHTML    = Icons.gem;
+      document.getElementById('ovIcon2').innerHTML    = Icons.calendar;
+      document.getElementById('ovIcon3').innerHTML    = Icons.key;
+      document.getElementById('ovIcon4').innerHTML    = Icons.download;
+      document.getElementById('dlIcon').innerHTML     = Icons.download;
+      document.getElementById('actIcon').innerHTML    = Icons.activity;
+      document.getElementById('keyIconBig').innerHTML = Icons.keyBig;
+      document.getElementById('unlockIcon').innerHTML = Icons.unlock;
+      document.getElementById('trashIcon').innerHTML  = Icons.trash;
+      document.getElementById('stIconUser').innerHTML = Icons.user;
+      document.getElementById('stIconMail').innerHTML = Icons.mail;
+      document.getElementById('stIconLock1').innerHTML = Icons.lock;
+      document.getElementById('stIconLock2').innerHTML = Icons.lock;
+      document.getElementById('stIconLock3').innerHTML = Icons.lock;
+      document.getElementById('stToggle1').innerHTML  = Icons.eye;
+      document.getElementById('stToggle2').innerHTML  = Icons.eye;
+      document.getElementById('stToggle3').innerHTML  = Icons.eye;
+
+      // Subscription tab icons
+      ['spc1','spc2','spc3','spc4','spc5','spc6','spc7','spc8','spc9','spc10','spc11','spc12','spc13','spc14','spc15']
+        .forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = Icons.check; });
+      ['spx1','spx2','spx3']
+        .forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = Icons.x; });
+
+      // Show admin button only for ADMINSYSTEM
+      const adminNavBtn  = document.getElementById('adminNavBtn');
+      const adminNavIcon = document.getElementById('adminNavIcon');
+      if (adminNavIcon) adminNavIcon.innerHTML = Icons.settings;
+      try {
+        const u = JSON.parse(localStorage.getItem('zetrix_user'));
+        const creds = JSON.parse(localStorage.getItem('zetrix_admin_creds')) || { login: 'ADMINSYSTEM' };
+        if (u && u.username === creds.login && adminNavBtn) {
+          adminNavBtn.style.display = 'inline-flex';
+        }
+      } catch {}
+    });
+  </script>
+</body>
+</html>

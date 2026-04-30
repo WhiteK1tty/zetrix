@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Админ-панель — Zetrix</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="animations.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="custom-select.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="admin-page">
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div class="admin-login-screen" id="adminLoginScreen" style="display:none">
+    <div class="auth-glow"></div>
+    <div class="admin-login-card">
+      <div class="auth-logo" style="margin-bottom:8px">
+        <span id="loginLogoIcon"></span>
+        <span class="logo-text">Zetrix</span>
+      </div>
+      <div class="admin-login-badge">Admin Panel</div>
+      <h1 class="auth-title" style="font-size:1.4rem;margin-top:16px">Вход в панель</h1>
+      <p class="auth-sub">Доступ только для администратора</p>
+
+      <form class="auth-form" onsubmit="handleAdminLogin(event)">
+        <div id="adminLoginError" class="auth-error" style="display:none"></div>
+
+        <div class="form-group">
+          <label class="form-label">Логин</label>
+          <div class="input-wrap">
+            <span class="input-icon" id="loginUserIcon"></span>
+            <input type="text" class="form-input" id="adminLoginInput" placeholder="Логин администратора" required autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Пароль</label>
+          <div class="input-wrap">
+            <span class="input-icon" id="loginLockIcon"></span>
+            <input type="password" class="form-input" id="adminPasswordInput" placeholder="••••••••" required />
+            <button type="button" class="input-toggle" id="loginPassToggle" onclick="togglePassword('adminPasswordInput', this)"></button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary full large auth-submit" style="margin-top:4px">
+          Войти
+        </button>
+      </form>
+
+      <div style="text-align:center;margin-top:20px">
+        <a href="index.html" style="font-size:0.82rem;color:#4a4a5a;transition:color 0.2s" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#4a4a5a'">
+          Вернуться на сайт
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PANEL WRAP ===== -->
+  <div id="adminPanelWrap" style="display:none;width:100%;min-height:100vh">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-logo">
+        <span id="adminLogoIcon"></span>
+        <span>Zetrix</span>
+        <span class="admin-badge">Admin</span>
+      </div>
+
+      <nav class="admin-nav">
+        <div class="admin-nav-group">
+          <div class="admin-nav-label">Обзор</div>
+          <a href="#" class="admin-link active" onclick="adminTab('dashboard', this)">
+            <span class="al-icon" id="alIcon1"></span> Дашборд
+          </a>
+        </div>
+        <div class="admin-nav-group">
+          <div class="admin-nav-label">Управление</div>
+          <a href="#" class="admin-link" onclick="adminTab('keys', this)">
+            <span class="al-icon" id="alIcon2"></span> Ключи
+          </a>
+          <a href="#" class="admin-link" onclick="adminTab('users', this)">
+            <span class="al-icon" id="alIcon3"></span> Пользователи
+          </a>
+          <a href="#" class="admin-link" onclick="adminTab('logs', this)">
+            <span class="al-icon" id="alIcon4"></span> Логи
+          </a>
+        </div>
+        <div class="admin-nav-group">
+          <div class="admin-nav-label">Система</div>
+          <a href="#" class="admin-link" onclick="adminTab('settings', this)">
+            <span class="al-icon" id="alIcon5"></span> Настройки
+          </a>
+          <a href="index.html" class="admin-link">
+            <span class="al-icon" id="alIcon6"></span> На сайт
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="admin-main">
+
+      <!-- TOPBAR -->
+      <header class="admin-topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+          <span id="menuIcon"></span>
+        </button>
+        <div class="topbar-title" id="topbarTitle">Дашборд</div>
+        <div class="topbar-right">
+          <div class="topbar-admin">
+            <div class="topbar-avatar">A</div>
+            <span id="topbarAdminName">Admin</span>
+          </div>
+          <button class="tbl-btn danger" title="Выйти" onclick="adminLogout()" style="width:auto;padding:0 12px;gap:6px;font-size:0.8rem;font-weight:600;font-family:Inter,sans-serif">
+            <span id="logoutIcon"></span> Выйти
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="admin-content">
+
+        <!-- DASHBOARD -->
+        <div class="admin-tab active" id="tab-dashboard">
+          <div class="admin-page-title">Дашборд</div>
+          <div class="dash-stats">
+            <div class="dash-stat-card">
+              <div class="dsc-icon" id="dscIcon1"></div>
+              <div class="dsc-info">
+                <div class="dsc-num" id="statUsers">0</div>
+                <div class="dsc-label">Пользователей</div>
+              </div>
+            </div>
+            <div class="dash-stat-card">
+              <div class="dsc-icon" id="dscIcon2"></div>
+              <div class="dsc-info">
+                <div class="dsc-num" id="statKeys">0</div>
+                <div class="dsc-label">Ключей всего</div>
+              </div>
+            </div>
+            <div class="dash-stat-card">
+              <div class="dsc-icon" id="dscIcon3"></div>
+              <div class="dsc-info">
+                <div class="dsc-num" id="statActive">0</div>
+                <div class="dsc-label">Активных ключей</div>
+              </div>
+            </div>
+            <div class="dash-stat-card">
+              <div class="dsc-icon" id="dscIcon4"></div>
+              <div class="dsc-info">
+                <div class="dsc-num" id="statUsed">0</div>
+                <div class="dsc-label">Использованных</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-grid">
+            <div class="dash-card">
+              <div class="dash-card-title">
+                <span id="recentUsersIcon"></span> Последние пользователи
+              </div>
+              <div id="recentUsersList" class="dash-list"></div>
+            </div>
+            <div class="dash-card">
+              <div class="dash-card-title">
+                <span id="recentLogsIcon"></span> Последние события
+              </div>
+              <div id="recentLogsList" class="dash-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KEYS -->
+        <div class="admin-tab" id="tab-keys">
+          <div class="admin-page-header">
+            <div class="admin-page-title">Управление ключами</div>
+            <button class="btn-primary" onclick="openGenerateKey()">
+              <span id="genKeyIcon"></span> Создать ключ
+            </button>
+          </div>
+
+          <div class="admin-card generate-card" id="generateCard" style="display:none">
+            <div class="admin-card-title">Создать новый ключ</div>
+            <div class="gen-form">
+              <div class="gen-row">
+                <div class="form-group">
+                  <label class="form-label">Тип плана</label>
+                  <input type="hidden" id="genPlan" value="Базовый" />
+                  <div data-custom-select data-options="Базовый,Премиум,VIP" data-value="Базовый" data-target="genPlan"></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Срок действия (дней)</label>
+                  <input type="number" class="form-input" id="genDays" value="30" min="1" max="365" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Количество ключей</label>
+                  <input type="number" class="form-input" id="genCount" value="1" min="1" max="100" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Примечание</label>
+                  <input type="text" class="form-input" id="genNote" placeholder="Необязательно" />
+                </div>
+              </div>
+              <div class="gen-actions">
+                <button class="btn-primary" onclick="generateKeys()">Создать</button>
+                <button class="btn-outline" onclick="closeGenerateKey()">Отмена</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="table-toolbar">
+              <div class="input-wrap table-search">
+                <span class="input-icon" id="searchIcon1"></span>
+                <input type="text" class="form-input" placeholder="Поиск по ключу..." oninput="filterKeys(this.value)" />
+              </div>
+              <div class="table-filters">
+                <button class="filter-btn active" onclick="filterKeysByPlan('all', this)">Все</button>
+                <button class="filter-btn" onclick="filterKeysByPlan('Базовый', this)">Базовый</button>
+                <button class="filter-btn" onclick="filterKeysByPlan('Премиум', this)">Премиум</button>
+                <button class="filter-btn" onclick="filterKeysByPlan('VIP', this)">VIP</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Ключ</th><th>План</th><th>Срок</th><th>Статус</th>
+                    <th>Примечание</th><th>Создан</th><th>Действия</th>
+                  </tr>
+                </thead>
+                <tbody id="keysTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- USERS -->
+        <div class="admin-tab" id="tab-users">
+          <div class="admin-page-header">
+            <div class="admin-page-title">Пользователи</div>
+          </div>
+          <div class="admin-card">
+            <div class="table-toolbar">
+              <div class="input-wrap table-search">
+                <span class="input-icon" id="searchIcon2"></span>
+                <input type="text" class="form-input" placeholder="Поиск по нику или email..." oninput="filterUsers(this.value)" />
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Пользователь</th><th>Email</th><th>План</th>
+                    <th>Подписка до</th><th>Ключей</th><th>Действия</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOGS -->
+        <div class="admin-tab" id="tab-logs">
+          <div class="admin-page-header">
+            <div class="admin-page-title">Журнал событий</div>
+            <button class="btn-outline" onclick="clearLogs()">
+              <span id="clearLogsIcon"></span> Очистить логи
+            </button>
+          </div>
+          <div class="admin-card">
+            <div class="table-toolbar">
+              <div class="input-wrap table-search">
+                <span class="input-icon" id="searchIcon3"></span>
+                <input type="text" class="form-input" placeholder="Поиск по событиям..." oninput="filterLogs(this.value)" />
+              </div>
+              <div class="table-filters">
+                <button class="filter-btn active" onclick="filterLogsByType('all', this)">Все</button>
+                <button class="filter-btn" onclick="filterLogsByType('key', this)">Ключи</button>
+                <button class="filter-btn" onclick="filterLogsByType('user', this)">Пользователи</button>
+                <button class="filter-btn" onclick="filterLogsByType('system', this)">Система</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr><th>Время</th><th>Тип</th><th>Событие</th><th>Пользователь</th><th>Детали</th></tr>
+                </thead>
+                <tbody id="logsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="admin-tab" id="tab-settings">
+          <div class="admin-page-title">Настройки системы</div>
+
+          <div class="admin-card">
+            <div class="admin-card-title">Изменить данные администратора</div>
+            <div class="settings-form" style="max-width:440px;display:flex;flex-direction:column;gap:16px">
+              <div class="form-group">
+                <label class="form-label">Новый логин</label>
+                <div class="input-wrap">
+                  <span class="input-icon" id="stUserIcon"></span>
+                  <input type="text" class="form-input" id="newAdminLogin" placeholder="Новый логин" autocomplete="off" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Новый пароль</label>
+                <div class="input-wrap">
+                  <span class="input-icon" id="stLockIcon1"></span>
+                  <input type="password" class="form-input" id="newAdminPass" placeholder="Минимум 6 символов" />
+                  <button type="button" class="input-toggle" id="stPassToggle1" onclick="togglePassword('newAdminPass', this)"></button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Подтвердите пароль</label>
+                <div class="input-wrap">
+                  <span class="input-icon" id="stLockIcon2"></span>
+                  <input type="password" class="form-input" id="newAdminPassConfirm" placeholder="Повторите пароль" />
+                  <button type="button" class="input-toggle" id="stPassToggle2" onclick="togglePassword('newAdminPassConfirm', this)"></button>
+                </div>
+              </div>
+              <button class="btn-primary" style="align-self:flex-start" onclick="saveAdminCreds()">Сохранить</button>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-card-title">Опасная зона</div>
+            <div class="danger-actions">
+              <div class="danger-action-row">
+                <div>
+                  <div class="danger-action-title">Сбросить все ключи</div>
+                  <div class="danger-action-desc">Удалит все созданные ключи из системы</div>
+                </div>
+                <button class="btn-danger" onclick="resetAllKeys()">Сбросить ключи</button>
+              </div>
+              <div class="danger-action-row">
+                <div>
+                  <div class="danger-action-title">Очистить пользователей</div>
+                  <div class="danger-action-desc">Удалит всех зарегистрированных пользователей</div>
+                </div>
+                <button class="btn-danger" onclick="resetAllUsers()">Очистить</button>
+              </div>
+              <div class="danger-action-row">
+                <div>
+                  <div class="danger-action-title">Полный сброс</div>
+                  <div class="danger-action-desc">Удалит все данные системы. Необратимо</div>
+                </div>
+                <button class="btn-danger" onclick="fullReset()">Полный сброс</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /admin-content -->
+    </div><!-- /admin-main -->
+
+  </div><!-- /adminPanelWrap -->
+
+  <!-- USER EDIT MODAL -->
+  <div class="zmodal-overlay" id="userEditOverlay" style="display:none">
+    <div class="zmodal wide">
+      <div class="zmodal-title">Редактировать пользователя</div>
+      <div class="zmodal-body">
+        <input type="hidden" id="editUserId" />
+        <div class="form-group">
+          <label class="form-label">Никнейм</label>
+          <div class="input-wrap"><input type="text" class="form-input" id="editUsername" /></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="input-wrap"><input type="email" class="form-input" id="editEmail" /></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">План</label>
+          <input type="hidden" id="editPlan" value="Базовый" />
+          <div id="editPlanSelect" data-custom-select data-options="Базовый,Премиум,VIP" data-value="Базовый" data-target="editPlan"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Подписка до</label>
+          <div class="input-wrap"><input type="text" class="form-input" id="editExpiry" placeholder="дд.мм.гггг" /></div>
+        </div>
+      </div>
+      <div class="zmodal-actions" style="justify-content:flex-end">
+        <button class="zmodal-btn cancel" onclick="closeUserEdit()">Отмена</button>
+        <button class="zmodal-btn confirm" onclick="saveUserEdit()">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="icons.js"></script>
+  <script src="transitions.js"></script>
+  <script src="modal.js"></script>
+  <script src="custom-select.js"></script>
+  <script type="module" src="admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+      const menuSvg   = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+
+      // Login screen icons
+      document.getElementById('loginLogoIcon').innerHTML  = Icons.logo;
+      document.getElementById('loginUserIcon').innerHTML  = Icons.user;
+      document.getElementById('loginLockIcon').innerHTML  = Icons.lock;
+      document.getElementById('loginPassToggle').innerHTML = Icons.eye;
+
+      // Panel icons
+      document.getElementById('adminLogoIcon').innerHTML  = Icons.logo;
+      document.getElementById('alIcon1').innerHTML = Icons.home;
+      document.getElementById('alIcon2').innerHTML = Icons.key;
+      document.getElementById('alIcon3').innerHTML = Icons.user;
+      document.getElementById('alIcon4').innerHTML = Icons.activity;
+      document.getElementById('alIcon5').innerHTML = Icons.settings;
+      document.getElementById('alIcon6').innerHTML = Icons.zap;
+      document.getElementById('menuIcon').innerHTML       = menuSvg;
+      document.getElementById('logoutIcon').innerHTML     = Icons.logout;
+      document.getElementById('dscIcon1').innerHTML = Icons.user;
+      document.getElementById('dscIcon2').innerHTML = Icons.key;
+      document.getElementById('dscIcon3').innerHTML = Icons.gem;
+      document.getElementById('dscIcon4').innerHTML = Icons.activity;
+      document.getElementById('recentUsersIcon').innerHTML = Icons.user;
+      document.getElementById('recentLogsIcon').innerHTML  = Icons.activity;
+      document.getElementById('genKeyIcon').innerHTML      = Icons.key;
+      document.getElementById('clearLogsIcon').innerHTML   = Icons.trash;
+      document.getElementById('searchIcon1').innerHTML = searchSvg;
+      document.getElementById('searchIcon2').innerHTML = searchSvg;
+      document.getElementById('searchIcon3').innerHTML = searchSvg;
+      document.getElementById('stUserIcon').innerHTML  = Icons.user;
+      document.getElementById('stLockIcon1').innerHTML = Icons.lock;
+      document.getElementById('stLockIcon2').innerHTML = Icons.lock;
+      document.getElementById('stPassToggle1').innerHTML = Icons.eye;
+      document.getElementById('stPassToggle2').innerHTML = Icons.eye;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zetrix — Minecraft Client</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="animations.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon" id="logoIcon"></span>
+        <span class="logo-text">Zetrix</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Главная</a></li>
+        <li><a href="#features">Функции</a></li>
+        <li><a href="#pricing">Цены</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="btn-ghost">Войти</a>
+        <a href="register.html" class="btn-primary">Регистрация</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Release уже доступен</div>
+      <h1 class="hero-title">Почувствуй<br />преимущество<br />с Zetrix</h1>
+      <p class="hero-sub">Современные функции, топовая защита от банов, высокая производительность и частые обновления. Всё это в Zetrix Client.</p>
+      <div class="hero-buttons">
+        <a href="register.html" class="btn-primary large">
+          <span class="btn-icon" id="iconRocket"></span>
+          Начать сейчас
+        </a>
+        <a href="#features" class="btn-outline large">
+          <span class="btn-icon" id="iconZap"></span>
+          Функции
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">12K+</span>
+          <span class="stat-label">Пользователей</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">99.9%</span>
+          <span class="stat-label">Uptime</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">50+</span>
+          <span class="stat-label">Функций</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <div class="section-label reveal">Возможности</div>
+      <h2 class="section-title reveal reveal-delay-1">Всё что нужно для победы</h2>
+      <p class="section-sub reveal reveal-delay-2">Zetrix включает в себя всё необходимое для доминирования на любом сервере</p>
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon" id="fIcon1"></div>
+          <h3>KillAura</h3>
+          <p>Автоматическая атака ближайших игроков с настраиваемым радиусом и задержкой</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon" id="fIcon3"></div>
+          <h3>AimAssist</h3>
+          <p>Плавная помощь в прицеливании, которая выглядит как игра живого человека</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-icon" id="fIcon4"></div>
+          <h3>AntiCheat Bypass</h3>
+          <p>Обход популярных античитов: NCP, AAC, Grim, Spartan и других</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="section-inner">
+      <div class="section-label reveal">Тарифы</div>
+      <h2 class="section-title reveal reveal-delay-1">Выбери свой план</h2>
+      <p class="section-sub reveal reveal-delay-2">Доступные цены для каждого игрока</p>
+      <div class="pricing-grid">
+
+        <div class="price-card reveal reveal-delay-1">
+          <div class="price-tier">1 Месяц</div>
+          <div class="price-amount"><span class="price-currency">₽</span>299<span class="price-period">/мес</span></div>
+          <a href="register.html" class="btn-outline full">Выбрать</a>
+        </div>
+
+        <div class="price-card featured reveal reveal-delay-2">
+          <div class="price-badge">Популярный</div>
+          <div class="price-tier">3 Месяца</div>
+          <div class="price-amount"><span class="price-currency">₽</span>599<span class="price-period">/3 мес</span></div>
+          <a href="register.html" class="btn-primary full">Выбрать</a>
+        </div>
+
+        <div class="price-card reveal reveal-delay-3">
+          <div class="price-tier">Навсегда</div>
+          <div class="price-amount"><span class="price-currency">₽</span>999<span class="price-period"> навсегда</span></div>
+          <a href="register.html" class="btn-outline full">Выбрать</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="section-inner narrow">
+      <div class="section-label reveal">FAQ</div>
+      <h2 class="section-title reveal reveal-delay-1">Частые вопросы</h2>
+      <div class="faq-list">
+        <details class="faq-item reveal reveal-delay-1">
+          <summary>Безопасно ли использовать Zetrix?</summary>
+          <p>Да, наш клиент использует продвинутые методы обхода античитов. Мы регулярно обновляем защиту, чтобы минимизировать риск бана.</p>
+        </details>
+        <details class="faq-item reveal reveal-delay-2">
+          <summary>Какие версии Minecraft поддерживаются?</summary>
+          <p>Zetrix поддерживает версии от 1.8 до 1.20.x. Мы добавляем поддержку новых версий в течение нескольких дней после их выхода.</p>
+        </details>
+        <details class="faq-item reveal reveal-delay-3">
+          <summary>Как активировать ключ после оплаты?</summary>
+          <p>После оплаты вы получите лицензионный ключ. Зайдите в личный кабинет, перейдите в раздел «Активация ключа» и введите полученный код.</p>
+        </details>
+        <details class="faq-item reveal reveal-delay-4">
+          <summary>Есть ли возврат средств?</summary>
+          <p>Мы предоставляем возврат в течение 24 часов после покупки, если клиент не работает на вашем устройстве и наша поддержка не смогла помочь.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <span class="logo-icon" id="footerLogoIcon"></span>
+        <span class="logo-text">Zetrix</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Условия использования</a>
+        <a href="#">Discord</a>
+        <a href="#">Telegram</a>
+      </div>
+      <p class="footer-copy">© 2026 Zetrix Client. Только для образовательных целей.</p>
+    </div>
+  </footer>
+
+  <script src="icons.js"></script>
+  <script src="transitions.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Inject SVG icons
+      document.getElementById('logoIcon').innerHTML       = Icons.logo;
+      document.getElementById('footerLogoIcon').innerHTML = Icons.logo;
+      document.getElementById('iconRocket').innerHTML     = Icons.rocket;
+      document.getElementById('iconZap').innerHTML        = Icons.zap;
+      document.getElementById('fIcon1').innerHTML = Icons.sword;
+      document.getElementById('fIcon3').innerHTML = Icons.target;
+      document.getElementById('fIcon4').innerHTML = Icons.shield;
+
+      // Price check icons
+      ['pc1','pc2','pc3','pc4','pc5','pc6','pc7','pc8','pc9','pc10','pc11','pc12','pc13','pc14','pc15']
+        .forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = Icons.check; });
+    });
+  </script>
+</body>
+</html>
