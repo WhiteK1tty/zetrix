@@ -11,7 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    currentUser = await ZAuth.getProfile(firebaseUser.uid);
+    try {
+      currentUser = await ZAuth.getProfile(firebaseUser.uid);
+    } catch (err) {
+      showProfileError(err.message || 'Ошибка загрузки профиля');
+      return;
+    }
+
     if (!currentUser) { window.location.href = 'login.html'; return; }
 
     renderProfile();
@@ -19,6 +25,19 @@ document.addEventListener('DOMContentLoaded', () => {
     renderKeysHistory();
   });
 });
+
+function showProfileError(msg) {
+  const container = document.querySelector('.profile-container') || document.body;
+  const existing = document.getElementById('profile-error-banner');
+  if (existing) existing.remove();
+
+  const banner = document.createElement('div');
+  banner.id = 'profile-error-banner';
+  banner.style.cssText = 'background: var(--glass-06); border: 1px solid var(--danger); color: var(--danger-text); padding: 16px 20px; border-radius: 12px; margin: 20px; text-align: center; font-size: 14px;';
+  banner.innerHTML = `<div style="font-weight:600;margin-bottom:6px;">Не удалось загрузить профиль</div><div>${msg}</div><button onclick="window.location.reload()" style="margin-top:10px;padding:6px 14px;border-radius:6px;border:none;background:var(--primary);color:#fff;cursor:pointer;font-size:13px;">Повторить</button>`;
+
+  container.prepend(banner);
+}
 
 // ===== RENDER PROFILE =====
 function renderProfile() {

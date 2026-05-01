@@ -56,8 +56,14 @@ async function handleLogin(e) {
 
   try {
     // Check admin credentials first (stored in Firestore settings)
-    const { ZAdmin } = await import('./database.js');
-    const isAdmin = await ZAdmin.checkCredentials(input, password);
+    let isAdmin = false;
+    try {
+      const { ZAdmin } = await import('./database.js');
+      isAdmin = await ZAdmin.checkCredentials(input, password);
+    } catch (adminErr) {
+      // If admin check fails due to Firestore issues, continue to regular login
+      console.warn('Admin check error:', adminErr.message);
+    }
 
     if (isAdmin) {
       sessionStorage.setItem('zetrix_admin_session', 'true');
@@ -75,7 +81,15 @@ async function handleLogin(e) {
     btn.disabled  = false;
     btn.classList.remove('btn-loading');
     btn.textContent = 'Войти в аккаунт';
-    showAuthError(err.message || 'Неверный логин/email или пароль');
+
+    // Import error translator if available
+    let msg = err.message || 'Неверный логин/email или пароль';
+    try {
+      const { handleFirestoreError } = await import('./database.js');
+      msg = handleFirestoreError(err);
+    } catch (_) { /* ignore import error */ }
+
+    showAuthError(msg);
   }
 }
 window.handleLogin = handleLogin;

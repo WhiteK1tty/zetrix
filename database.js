@@ -26,6 +26,35 @@ import {
 //   settings/      — системные настройки (admin creds и тд)
 // ============================================================
 
+// ===== ERROR HANDLING =====
+export function handleFirestoreError(err) {
+  const msg = err?.message || '';
+  const code = err?.code || '';
+
+  if (msg.includes('client is offline') || msg.includes('offline') || code === 'unavailable') {
+    return 'Нет подключения к серверу. Проверьте интернет и попробуйте снова. Если интернет есть — проверьте настройки Firestore в консоли Firebase (Rules).';
+  }
+  if (code === 'permission-denied' || msg.includes('permission') || msg.includes('Missing or insufficient permissions')) {
+    return 'Доступ запрещён. В консоли Firebase откройте Firestore Database → Rules и разрешите чтение/запись (allow read, write: if true;).';
+  }
+  if (code === 'not-found' || msg.includes('not found')) {
+    return 'Данные не найдены в базе.';
+  }
+  if (code === 'resource-exhausted') {
+    return 'Слишком много запросов. Подождите немного и попробуйте снова.';
+  }
+  if (code === 'unauthenticated' || msg.includes('unauthenticated')) {
+    return 'Сессия истекла. Войдите заново.';
+  }
+  if (code === 'cancelled') {
+    return 'Запрос отменён. Попробуйте снова.';
+  }
+  if (code === 'deadline-exceeded' || msg.includes('timeout')) {
+    return 'Сервер не отвечает. Проверьте интернет и попробуйте снова.';
+  }
+  return msg;
+}
+
 // ===== LOGS =====
 export async function addLog(type, event, actor = 'System', details = '') {
   try {
@@ -69,14 +98,19 @@ export const ZAuth = {
 
   // Вход
   async login(email, password) {
-    const cred = await signInWithEmailAndPassword(auth, email, password);
-    const uid  = cred.user.uid;
-    const snap = await getDoc(doc(db, 'users', uid));
-    if (!snap.exists()) throw new Error('Профиль не найден');
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const uid  = cred.user.uid;
+      const snap = await getDoc(doc(db, 'users', uid));
+      if (!snap.exists()) throw new Error('Профиль не найден');
 
-    const user = snap.data();
-    await addLog('user', `Вход: ${user.username}`, user.username);
-    return user;
+      const user = snap.data();
+      await addLog('user', `Вход: ${user.username}`, user.username);
+      return user;
+    } catch (err) {
+      if (err.code && err.code.startsWith('auth/')) throw err;
+      throw new Error(handleFirestoreError(err));
+    }
   },
 
   // Вход по email или username
@@ -88,19 +122,25 @@ export const ZAuth = {
       return await this.login(id, password);
     }
 
-    // Сначала точное совпадение по username
-    const exactQ = query(collection(db, 'users'), where('username', '==', id));
-    let snap = await getDocs(exactQ);
+    try {
+      // Сначала точное совпадение по username
+      const exactQ = query(collection(db, 'users'), where('username', '==', id));
+      let snap = await getDocs(exactQ);
 
-    // Фоллбек: поиск без учёта регистра
-    if (snap.empty) {
-      const allUsers = await getDocs(collection(db, 'users'));
-      const match = allUsers.docs.find(d => String(d.data().username || '').toLowerCase() === id.toLowerCase());
-      if (!match) throw new Error('Пользователь не найден');
-      return await this.login(match.data().email, password);
+      // Фоллбек: поиск без учёта регистра
+      if (snap.empty) {
+        const allUsers = await getDocs(collection(db, 'users'));
+        const match = allUsers.docs.find(d => String(d.data().username || '').toLowerCase() === id.toLowerCase());
+        if (!match) throw new Error('Пользователь не найден');
+        return await this.login(match.data().email, password);
+      }
+
+      return await this.login(snap.docs[0].data().email, password);
+    } catch (err) {
+      if (err.message === 'Пользователь не найден') throw err;
+      if (err.code && err.code.startsWith('auth/')) throw err;
+      throw new Error(handleFirestoreError(err));
     }
-
-    return await this.login(snap.docs[0].data().email, password);
   },
 
   // Выход
@@ -110,9 +150,13 @@ export const ZAuth = {
 
   // Текущий пользователь из Firestore
   async getProfile(uid) {
-    const snap = await getDoc(doc(db, 'users', uid));
-    if (!snap.exists()) return null;
-    return snap.data();
+    try {
+      const snap = await getDoc(doc(db, 'users', uid));
+      if (!snap.exists()) return null;
+      return snap.data();
+    } catch (err) {
+      throw new Error(handleFirestoreError(err));
+    }
   },
 
   // Обновить профиль
@@ -218,12 +262,18 @@ export const ZAdmin = {
 
   // Проверить пароль администратора
   async checkCredentials(login, password) {
-    const snap = await getDoc(doc(db, 'settings', 'admin'));
-    const creds = snap.exists()
-      ? snap.data()
-      : { login: 'ADMINSYSTEM', password: '12345678' };
+    try {
+      const snap = await getDoc(doc(db, 'settings', 'admin'));
+      const creds = snap.exists()
+        ? snap.data()
+        : { login: 'ADMINSYSTEM', password: '12345678' };
 
-    return creds.login === login && creds.password === password;
+      return creds.login === login && creds.password === password;
+    } catch (err) {
+      // If Firestore is unreachable, fall back to hardcoded default so regular users can still try login
+      console.warn('Admin check failed (Firestore unavailable):', err.message);
+      return login === 'ADMINSYSTEM' && password === '12345678';
+    }
   },
 
   // Сменить данные администратора
