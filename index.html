@@ -37,9 +37,16 @@
 
   <!-- HERO -->
   <section class="hero" id="home">
+    <div class="hero-mesh">
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="hero-orb hero-orb-3"></div>
+    </div>
+    <div class="hero-grid"></div>
     <div class="hero-glow"></div>
+    <div class="particles-container" id="heroParticles"></div>
     <div class="hero-content">
-      <div class="hero-badge">Release уже доступен</div>
+      <div class="hero-badge gradient-shift">Release уже доступен</div>
       <h1 class="hero-title">Почувствуй<br />преимущество<br />с Zetrix</h1>
       <p class="hero-sub">Современные функции, топовая защита от банов, высокая производительность и частые обновления. Всё это в Zetrix Client.</p>
       <div class="hero-buttons">
@@ -54,17 +61,17 @@
       </div>
       <div class="hero-stats">
         <div class="stat">
-          <span class="stat-num">12K+</span>
+          <span class="stat-num" data-counter="12000">0</span>
           <span class="stat-label">Пользователей</span>
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
-          <span class="stat-num">99.9%</span>
+          <span class="stat-num" data-counter="99.9" data-suffix="%" data-decimal="true">0</span>
           <span class="stat-label">Uptime</span>
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
-          <span class="stat-num">50+</span>
+          <span class="stat-num" data-counter="50" data-suffix="+">0</span>
           <span class="stat-label">Функций</span>
         </div>
       </div>
