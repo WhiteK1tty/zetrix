@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zetrix — Minecraft Client</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="animations.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
-<body>
+<body class="page-loaded">
 
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -24,9 +25,12 @@
         <li><a href="#pricing">Цены</a></li>
         <li><a href="#faq">FAQ</a></li>
       </ul>
-      <div class="nav-actions">
-        <a href="login.html" class="btn-ghost">Войти</a>
-        <a href="register.html" class="btn-primary">Регистрация</a>
+      <div class="nav-actions" id="navActions">
+        <button type="button" class="theme-toggle" id="themeToggle" onclick="ZetrixTheme.toggle()"></button>
+        <a href="login.html" class="btn-ghost" id="navLogin">Войти</a>
+        <a href="register.html" class="btn-primary" id="navRegister">Регистрация</a>
+        <a href="profile.html" class="btn-ghost" id="navProfile" style="display:none">Профиль</a>
+        <a href="#" class="btn-outline" id="navLogout" style="display:none" onclick="logout(); return false;">Выйти</a>
       </div>
     </div>
   </nav>
@@ -167,14 +171,27 @@
     </div>
   </footer>
 
-<script type="module">
+  <script type="module">
     import { auth } from './firebase-config.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // Если уже вошёл - сразу на профиль
+    // Показываем профиль/выйти если вошёл, иначе вход/регистрация
     onAuthStateChanged(auth, (user) => {
+      const loginBtn    = document.getElementById('navLogin');
+      const registerBtn = document.getElementById('navRegister');
+      const profileBtn  = document.getElementById('navProfile');
+      const logoutBtn   = document.getElementById('navLogout');
+
       if (user) {
-        window.location.href = 'profile.html';
+        if (loginBtn)    loginBtn.style.display    = 'none';
+        if (registerBtn) registerBtn.style.display = 'none';
+        if (profileBtn)  profileBtn.style.display  = 'inline-flex';
+        if (logoutBtn)   logoutBtn.style.display   = 'inline-flex';
+      } else {
+        if (loginBtn)    loginBtn.style.display    = 'inline-flex';
+        if (registerBtn) registerBtn.style.display = 'inline-flex';
+        if (profileBtn)  profileBtn.style.display  = 'none';
+        if (logoutBtn)   logoutBtn.style.display   = 'none';
       }
     });
   </script>

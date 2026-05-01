@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Регистрация — Zetrix</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="animations.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
-<body class="auth-page">
+<body class="auth-page page-loaded">
 
   <nav class="navbar">
     <div class="nav-inner">
@@ -23,6 +24,7 @@
         <li><a href="index.html#pricing">Цены</a></li>
       </ul>
       <div class="nav-actions">
+        <button type="button" class="theme-toggle" id="themeToggle" onclick="ZetrixTheme.toggle()"></button>
         <a href="login.html" class="btn-ghost">Войти</a>
       </div>
     </div>

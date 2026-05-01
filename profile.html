@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Профиль — Zetrix</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="animations.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 </head>
-<body class="profile-page">
+<body class="profile-page page-loaded">
 
   <nav class="navbar">
     <div class="nav-inner">
@@ -18,11 +19,12 @@
         <span class="logo-text">Zetrix</span>
       </a>
 <ul class="nav-links">
-        <li><a href="index.html" onclick="event.preventDefault(); window.location.href='index.html'">Главная</a></li>
+        <li><a href="index.html">Главная</a></li>
         <li><a href="index.html#features">Функции</a></li>
         <li><a href="index.html#pricing">Цены</a></li>
       </ul>
       <div class="nav-actions">
+        <button type="button" class="theme-toggle" id="themeToggle" onclick="ZetrixTheme.toggle()"></button>
         <a href="login.html" class="btn-ghost nav-logout" onclick="logout()">
           <span id="iconLogout"></span> Выйти
         </a>

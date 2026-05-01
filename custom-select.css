@@ -8,14 +8,14 @@
 /* Trigger button */
 .cselect-trigger {
   width: 100%;
-  background: rgba(255,255,255,0.04);
-  border: 1.5px solid rgba(255,255,255,0.08);
+  background: var(--glass-04);
+  border: 1.5px solid var(--glass-08);
   border-radius: 12px;
   padding: 11px 14px;
   font-size: 0.92rem;
   font-family: 'Inter', sans-serif;
   font-weight: 500;
-  color: #e2e2e8;
+  color: var(--text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -47,7 +47,7 @@
 .cselect-arrow {
   display: flex;
   align-items: center;
-  color: #6b6b80;
+  color: var(--text-tertiary);
   flex-shrink: 0;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s;
 }
@@ -62,7 +62,7 @@
   top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: #13131e;
+  background: var(--dropdown-bg);
   border: 1px solid rgba(124, 58, 237, 0.25);
   border-radius: 14px;
   padding: 6px;
@@ -93,14 +93,14 @@
   border-radius: 9px;
   font-size: 0.88rem;
   font-weight: 500;
-  color: #8b8ba0;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 
 .cselect-option:hover {
   background: rgba(124, 58, 237, 0.1);
-  color: #e2e2e8;
+  color: var(--text-primary);
 }
 
 .cselect-option.selected {
