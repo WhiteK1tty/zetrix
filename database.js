@@ -79,6 +79,30 @@ export const ZAuth = {
     return user;
   },
 
+  // Вход по email или username
+  async loginByIdentifier(identifier, password) {
+    const id = String(identifier || '').trim();
+    if (!id) throw new Error('Введите email или логин');
+
+    if (id.includes('@')) {
+      return await this.login(id, password);
+    }
+
+    // Сначала точное совпадение по username
+    const exactQ = query(collection(db, 'users'), where('username', '==', id));
+    let snap = await getDocs(exactQ);
+
+    // Фоллбек: поиск без учёта регистра
+    if (snap.empty) {
+      const allUsers = await getDocs(collection(db, 'users'));
+      const match = allUsers.docs.find(d => String(d.data().username || '').toLowerCase() === id.toLowerCase());
+      if (!match) throw new Error('Пользователь не найден');
+      return await this.login(match.data().email, password);
+    }
+
+    return await this.login(snap.docs[0].data().email, password);
+  },
+
   // Выход
   async logout() {
     await signOut(auth);

@@ -66,17 +66,7 @@ async function handleLogin(e) {
       return;
     }
 
-    // Regular user — need email!
-    // Проверяем что ввели: если есть @ - это email, иначе - ошибка
-    if (!input.includes('@')) {
-      btn.disabled  = false;
-      btn.classList.remove('btn-loading');
-      btn.textContent = 'Войти в аккаунт';
-      showAuthError('Введите Email, который вы указали при регистрации');
-      return;
-    }
-
-    const user  = await ZAuth.login(input, password);
+    const user  = await ZAuth.loginByIdentifier(input, password);
 
     sessionStorage.setItem('zetrix_uid', user.uid);
     window.location.href = 'profile.html';
@@ -85,7 +75,7 @@ async function handleLogin(e) {
     btn.disabled  = false;
     btn.classList.remove('btn-loading');
     btn.textContent = 'Войти в аккаунт';
-    showAuthError(err.message || 'Неверный Email или пароль');
+    showAuthError(err.message || 'Неверный логин/email или пароль');
   }
 }
 window.handleLogin = handleLogin;
