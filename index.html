@@ -171,10 +171,16 @@
     import { auth } from './firebase-config.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // Если уже вошёл - сразу на профиль
+    // Если уже вошёл - показываем кнопку профиля вместо входа
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        window.location.href = 'profile.html';
+        const navActions = document.querySelector('.nav-actions');
+        if (navActions) {
+          navActions.innerHTML = `
+            <a href="profile.html" class="btn-ghost">Профиль</a>
+            <a href="register.html" class="btn-primary">Регистрация</a>
+          `;
+        }
       }
     });
   </script>

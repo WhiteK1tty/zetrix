@@ -1,5 +1,12 @@
+```
+# Dependencies
 node_modules/
-server/zetrix.db
-server/zetrix.db-shm
-server/zetrix.db-wal
+
+# Editors
+.vscode/
+
+# Environment
 .env
+.env.local
+.env.*
+```
