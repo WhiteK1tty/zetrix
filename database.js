@@ -339,9 +339,31 @@ export const ZAdmin = {
 
 // ===== KEY GENERATOR =====
 function generateKey(plan) {
-  const prefix = plan === 'Навсегда' ? 'VIP00'
-               : plan === '3 Месяца' ? 'PREMI'
-               : 'BASIC';
+  // Маппинг: все возможные названия планов -> prefix для ключа
+  const prefixMap = {
+    'Навсегда': 'VIP',
+    '3 Месяца': 'PREMIUM',
+    '1 Месяц': 'BASIC',
+    'VIP': 'VIP',
+    'Премиум': 'PREMIUM',
+    'Базовый': 'BASIC',
+    // Legacy/альтернативные названия
+    'VIP00': 'VIP',
+    'PREMI': 'PREMIUM',
+    'BASIC': 'BASIC',
+    'Навсегда (VIP)': 'VIP',
+    '3 Месяца (Премиум)': 'PREMIUM',
+    '1 Месяц (Базовый)': 'BASIC',
+  };
+  // Ищем по части названия (например "Навсегда" содержит "VIP")
+  let prefix = prefixMap[plan];
+  if (!prefix) {
+    // Фоллбек: если в названии есть "Навсегда" или "VIP" - это VIP
+    if (plan.includes('Навсегда') || plan.includes('VIP')) prefix = 'VIP';
+    else if (plan.includes('3 Месяца') || plan.includes('Премиум')) prefix = 'PREMIUM';
+    else if (plan.includes('1 Месяца') || plan.includes('Базовый')) prefix = 'BASIC';
+    else prefix = 'BASIC';
+  }
   const rand = () => Math.random().toString(36).substring(2, 7).toUpperCase();
   return `ZETRIX-${prefix}-${rand()}-${rand()}`;
 }
