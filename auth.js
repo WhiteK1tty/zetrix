@@ -48,7 +48,8 @@ function setButtonLoading(btn, text) {
 async function handleLogin(e) {
   e.preventDefault();
   const btn      = e.target.querySelector('.auth-submit');
-  const input    = e.target.querySelector('input[type="text"]').value.trim();
+  const inputEl  = document.getElementById('loginIdentifier');
+  const input    = inputEl ? inputEl.value.trim() : '';
   const password = document.getElementById('loginPassword').value;
 
   setButtonLoading(btn, 'Входим...');
