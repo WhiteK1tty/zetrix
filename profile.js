@@ -64,8 +64,8 @@ window.switchTab = switchTab;
 // ===== KEY ACTIVATION =====
 // Убираем форматирование - пользователь вводит ключ как есть
 function formatKey(input) {
-  // Просто UpperCase, без переносов
-  input.value = input.value.toUpperCase();
+  // Ничего не делаем - простоUpperCase
+  input.value = input.value.toUpperCase().replace(/-/g, '');
 }
 window.formatKey = formatKey;
 

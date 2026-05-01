@@ -136,15 +136,14 @@
 
           <form class="key-form" onsubmit="activateKey(event)">
             <div class="key-input-wrap">
-              <input
+<input
                 type="text"
                 class="key-input"
                 id="keyInput"
-                placeholder="ZETRIX-XXXXX-XXXXX-XXXXX"
-                maxlength="23"
-                oninput="formatKey(this)"
+                placeholder="ZETRIX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
                 autocomplete="off"
                 spellcheck="false"
+                oninput="this.value = this.value.toUpperCase()"
               />
             </div>
             <div class="key-result" id="keyResult"></div>
