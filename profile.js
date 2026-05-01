@@ -62,18 +62,41 @@ function switchTab(tabId, el) {
 window.switchTab = switchTab;
 
 // ===== KEY ACTIVATION =====
-// Убираем форматирование - пользователь вводит ключ как есть
 function formatKey(input) {
-  // Ничего не делаем - простоUpperCase
-  input.value = input.value.toUpperCase().replace(/-/g, '');
+  input.value = normalizeLicenseKey(input.value);
 }
 window.formatKey = formatKey;
+
+function normalizeLicenseKey(raw) {
+  let key = String(raw || '')
+    .toUpperCase()
+    .replace(/[‐‑‒–—−]/g, '-') // normalize all dash variants
+    .replace(/\s+/g, '')
+    .replace(/[^A-Z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  // Support compact format without dashes: ZETRIXVIPABCDE12345
+  if (!key.includes('-') && key.startsWith('ZETRIX')) {
+    const rest = key.slice(6);
+    const prefixes = ['PREMIUM', 'BASIC', 'VIP'];
+    const prefix = prefixes.find(p => rest.startsWith(p));
+    if (prefix) {
+      const suffix = rest.slice(prefix.length);
+      if (suffix.length === 10) {
+        key = `ZETRIX-${prefix}-${suffix.slice(0, 5)}-${suffix.slice(5, 10)}`;
+      }
+    }
+  }
+
+  return key;
+}
 
 async function activateKey(e) {
   e.preventDefault();
   const keyInput  = document.getElementById('keyInput');
   const keyResult = document.getElementById('keyResult');
-  const key       = keyInput.value.trim().toUpperCase();
+  const key       = normalizeLicenseKey(keyInput.value);
 
   if (!key) { triggerShake(keyInput); showKeyResult('error', 'Введите ключ активации'); return; }
 
@@ -83,6 +106,7 @@ async function activateKey(e) {
   try {
     const result = await ZKeys.activate(key, auth.currentUser.uid);
     currentUser = result.user;
+    keyInput.value = key;
 
     keyInput.classList.add('success');
     setTimeout(() => keyInput.classList.remove('success'), 700);
@@ -126,7 +150,7 @@ function showKeyResult(type, msg) {
 async function renderKeysHistory() {
   const list = document.getElementById('keysHistoryList');
   try {
-    const { history } = await ZKeys.getHistory(auth.currentUser.uid);
+    const history = await ZKeys.getHistory(auth.currentUser.uid);
     if (!history.length) {
       list.innerHTML = '<div class="activity-empty">Нет активированных ключей</div>';
       return;
@@ -160,7 +184,7 @@ async function renderActivity() {
   // Use key history as activity feed
   const list = document.getElementById('activityList');
   try {
-    const { history } = await ZKeys.getHistory(auth.currentUser.uid);
+    const history = await ZKeys.getHistory(auth.currentUser.uid);
     if (!history.length) {
       list.innerHTML = '<div class="activity-empty">Активность пока отсутствует</div>';
       return;
