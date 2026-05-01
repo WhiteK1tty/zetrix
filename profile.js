@@ -274,3 +274,16 @@ function showToast(msg, type = 'success') {
   toast.className   = 'toast ' + type + ' show';
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
+
+// ===== LOGOUT AND GO HOME =====
+async function logoutAndGoHome(e) {
+  e.preventDefault();
+  try {
+    await ZAuth.logout();
+    localStorage.removeItem('zetrix_user');
+    window.location.href = 'index.html';
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+window.logoutAndGoHome = logoutAndGoHome;
