@@ -48,7 +48,7 @@ function setButtonLoading(btn, text) {
 async function handleLogin(e) {
   e.preventDefault();
   const btn      = e.target.querySelector('.auth-submit');
-  const username = e.target.querySelector('input[type="text"]').value.trim();
+  const input    = e.target.querySelector('input[type="text"]').value.trim();
   const password = document.getElementById('loginPassword').value;
 
   setButtonLoading(btn, 'Входим...');
@@ -56,19 +56,26 @@ async function handleLogin(e) {
   try {
     // Check admin credentials first (stored in Firestore settings)
     const { ZAdmin } = await import('./database.js');
-    const isAdmin = await ZAdmin.checkCredentials(username, password);
+    const isAdmin = await ZAdmin.checkCredentials(input, password);
 
     if (isAdmin) {
       sessionStorage.setItem('zetrix_admin_session', 'true');
-      sessionStorage.setItem('zetrix_admin_login', username);
+      sessionStorage.setItem('zetrix_admin_login', input);
       window.location.href = 'admin.html';
       return;
     }
 
-    // Regular user — need email, try to find by username
-    // For simplicity: use username as email prefix if no @ present
-    const email = username.includes('@') ? username : username + '@zetrix.user';
-    const user  = await ZAuth.login(email, password);
+    // Regular user — need email!
+    // Проверяем что ввели: если есть @ - это email, иначе - ошибка
+    if (!input.includes('@')) {
+      btn.disabled  = false;
+      btn.classList.remove('btn-loading');
+      btn.textContent = 'Войти в аккаунт';
+      showAuthError('Введите Email, который вы указали при регистрации');
+      return;
+    }
+
+    const user  = await ZAuth.login(input, password);
 
     sessionStorage.setItem('zetrix_uid', user.uid);
     window.location.href = 'profile.html';
@@ -77,7 +84,7 @@ async function handleLogin(e) {
     btn.disabled  = false;
     btn.classList.remove('btn-loading');
     btn.textContent = 'Войти в аккаунт';
-    showAuthError(err.message || 'Неверный логин или пароль');
+    showAuthError(err.message || 'Неверный Email или пароль');
   }
 }
 window.handleLogin = handleLogin;

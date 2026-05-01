@@ -167,6 +167,18 @@
     </div>
   </footer>
 
+<script type="module">
+    import { auth } from './firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // Если уже вошёл - сразу на профиль
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = 'profile.html';
+      }
+    });
+  </script>
+
   <script src="icons.js"></script>
   <script src="transitions.js"></script>
   <script>

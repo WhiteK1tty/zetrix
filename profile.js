@@ -62,11 +62,10 @@ function switchTab(tabId, el) {
 window.switchTab = switchTab;
 
 // ===== KEY ACTIVATION =====
+// Убираем форматирование - пользователь вводит ключ как есть
 function formatKey(input) {
-  let val   = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  let parts = [];
-  for (let i = 0; i < val.length && i < 20; i += 5) parts.push(val.slice(i, i + 5));
-  input.value = parts.join('-');
+  // Просто UpperCase, без переносов
+  input.value = input.value.toUpperCase();
 }
 window.formatKey = formatKey;
 

@@ -40,10 +40,10 @@
 
       <form class="auth-form" onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label class="form-label">Логин или Email</label>
+<label class="form-label">Email</label>
           <div class="input-wrap">
             <span class="input-icon" id="iconUser"></span>
-            <input type="text" class="form-input" placeholder="your_nickname" required />
+<input type="email" class="form-input" placeholder="your@email.com" required />
           </div>
         </div>
 
@@ -79,6 +79,12 @@
       </div>
     </div>
   </div>
+
+<script type="module">
+    import { auth } from './firebase-config.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    onAuthStateChanged(auth, (user) => { if (user) window.location.href = 'profile.html'; });
+  </script>
 
   <script src="icons.js"></script>
   <script src="transitions.js"></script>
