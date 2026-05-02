@@ -1,10 +1,28 @@
-/* ===== THEME TRANSITION ===== */
+/* ===== SELECTIVE TRANSITIONS ===== */
 html {
   transition: background-color 0.4s ease;
 }
 
-*, *::before, *::after {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease, box-shadow 0.3s ease;
+.btn-primary,
+.btn-outline,
+.btn-ghost,
+.feature-card,
+.price-card,
+.overview-card,
+.dash-stat-card,
+.nav-links a,
+.sidebar-link,
+.admin-link,
+.form-input,
+.input-toggle,
+.theme-toggle,
+.faq-item,
+.toast,
+.table-badge,
+.filter-btn,
+.tbl-btn,
+.zmodal-btn {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease, box-shadow 0.3s ease, transform 0.25s ease;
 }
 
 /* ===== PAGE TRANSITION OVERLAY ===== */
@@ -19,11 +37,11 @@ html {
 }
 
 .page-transition.enter {
-  animation: curtainEnter 0.45s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  animation: curtainEnter 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 .page-transition.exit {
-  animation: curtainExit 0.45s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  animation: curtainExit 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 @keyframes curtainEnter {
@@ -38,47 +56,47 @@ html {
 
 /* ===== PAGE LOAD FADE IN ===== */
 .page-loaded {
-  animation: pageFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: pageFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes pageFadeIn {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== NAVBAR SLIDE DOWN ===== */
 .navbar {
-  animation: navSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: navSlideDown 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes navSlideDown {
-  from { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.95); }
+  from { opacity: 0; transform: translateX(-50%) translateY(-40px) scale(0.92); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
 /* ===== HERO STAGGER ===== */
 .hero-badge {
-  animation: fadeUp 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeUp 0.9s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-title {
-  animation: fadeUp 0.9s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeUp 1s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-sub {
-  animation: fadeUp 0.9s 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeUp 1s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-buttons {
-  animation: fadeUp 0.9s 0.58s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeUp 1s 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-stats {
-  animation: fadeUp 0.9s 0.68s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeUp 1s 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(40px); }
+  from { opacity: 0; transform: translateY(36px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -98,7 +116,7 @@ html {
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.85); }
+  from { opacity: 0; transform: scale(0.88); }
   to   { opacity: 1; transform: scale(1); }
 }
 
@@ -248,7 +266,7 @@ html {
 
 /* ===== AUTH CARD ENTRANCE ===== */
 .auth-card {
-  animation: authCardIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: authCardIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes authCardIn {
@@ -593,7 +611,7 @@ html {
 /* ===== BORDER DRAW ANIMATION ===== */
 @keyframes borderDraw {
   from { stroke-dashoffset: 1000; }
-  to   { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 0; }
 }
 
 /* ===== TYPING CURSOR ===== */
@@ -789,21 +807,246 @@ html {
 }
 
 /* ===== SMOOTH SECTION BG GRADIENT ===== */
-.features::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.05) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 50%, rgba(236, 72, 153, 0.04) 0%, transparent 50%);
-  pointer-events: none;
-}
-
 .pricing::before {
   content: '';
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse at 50% 30%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
   pointer-events: none;
+}
+
+/* ===== MAGNETIC BUTTON EFFECT ===== */
+.magnetic-btn {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== 3D TILT ON HOVER ===== */
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tilt-card .tilt-inner {
+  transform: translateZ(30px);
+}
+
+/* ===== TEXT SCRAMBLE REVEAL ===== */
+.scramble-text {
+  display: inline-block;
+}
+
+/* ===== CURSOR GLOW ===== */
+.cursor-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+  opacity: 0;
+}
+
+.cursor-glow.active {
+  opacity: 1;
+}
+
+/* ===== PARALLAX FLOAT ===== */
+.parallax-float {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* ===== WAVE DIVIDER ===== */
+.wave-divider {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave-divider svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 60px;
+}
+
+/* ===== MORPHING GRADIENT BORDER ===== */
+.morph-border {
+  position: relative;
+  border-radius: 16px;
+  z-index: 1;
+}
+
+.morph-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--primary), #ec4899, #3b82f6, var(--primary));
+  background-size: 300% 300%;
+  animation: morphGradient 4s ease infinite;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.morph-border:hover::before {
+  opacity: 1;
+}
+
+@keyframes morphGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ===== FLIP CARD ===== */
+.flip-card {
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 16px;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* ===== LIQUID BUTTON ===== */
+.liquid-btn {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.liquid-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1;
+}
+
+.liquid-btn:hover::after {
+  opacity: 1;
+}
+
+/* ===== NEON FLICKER ===== */
+.neon-flicker {
+  animation: neonFlicker 3s infinite alternate;
+}
+
+@keyframes neonFlicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.4; }
+}
+
+/* ===== RIPPLE EFFECT ===== */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple span {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: rippleAnim 0.6s linear;
+  background-color: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ===== GLITCH TEXT ===== */
+.glitch-text {
+  position: relative;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.glitch-text:hover::before {
+  animation: glitch1 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  color: #ec4899;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+.glitch-text:hover::after {
+  animation: glitch2 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+  color: #3b82f6;
+  opacity: 0.8;
+  z-index: -2;
+}
+
+@keyframes glitch1 {
+  0%   { transform: translate(0); }
+  20%  { transform: translate(-2px, 2px); }
+  40%  { transform: translate(-2px, -2px); }
+  60%  { transform: translate(2px, 2px); }
+  80%  { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes glitch2 {
+  0%   { transform: translate(0); }
+  20%  { transform: translate(2px, -2px); }
+  40%  { transform: translate(2px, 2px); }
+  60%  { transform: translate(-2px, -2px); }
+  80%  { transform: translate(-2px, 2px); }
+  100% { transform: translate(0); }
+}
+
+/* ===== SMOOTH SCROLL PROGRESS ===== */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #ec4899);
+  z-index: 100000;
+  transition: width 0.1s linear;
 }
 
 /* ===== RESPONSIVE REDUCE MOTION ===== */

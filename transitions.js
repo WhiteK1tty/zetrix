@@ -19,6 +19,7 @@
   function interceptLinks() {
     document.querySelectorAll('a[href]').forEach(link => {
       const href = link.getAttribute('href');
+      // Only intercept local .html links
       if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto')) return;
       if (link.dataset.transitioned) return;
       link.dataset.transitioned = 'true';
@@ -65,131 +66,117 @@
     }, { passive: true });
   }
 
-  // ===== PARTICLE GENERATION =====
-  function initParticles() {
-    const container = document.getElementById('heroParticles');
-    if (!container) return;
-
-    const count = 30;
-    for (let i = 0; i < count; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      p.style.left = Math.random() * 100 + '%';
-      p.style.width = (Math.random() * 3 + 1) + 'px';
-      p.style.height = p.style.width;
-      p.style.animationDuration = (Math.random() * 12 + 8) + 's';
-      p.style.animationDelay = (Math.random() * 10) + 's';
-      p.style.opacity = '0';
-
-      const colors = ['var(--primary-light)', 'var(--accent-pink)', 'var(--accent-blue)', 'var(--accent-cyan)'];
-      p.style.background = colors[Math.floor(Math.random() * colors.length)];
-
-      container.appendChild(p);
-    }
-  }
-
-  // ===== ANIMATED COUNTERS =====
-  function initCounters() {
-    const counters = document.querySelectorAll('[data-counter]');
-    if (!counters.length) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animateCounter(entry.target);
-          observer.unobserve(entry.target);
-        }
+  // Magnetic buttons
+  function initMagneticButtons() {
+    document.querySelectorAll('.btn-primary, .btn-outline').forEach(btn => {
+      btn.classList.add('magnetic-btn');
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate(${x * 0.08}px, ${y * 0.08}px)`;
       });
-    }, { threshold: 0.5 });
-
-    counters.forEach(el => observer.observe(el));
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+      });
+    });
   }
 
-  function animateCounter(el) {
-    const target = parseFloat(el.dataset.counter);
-    const suffix = el.dataset.suffix || '';
-    const isDecimal = el.dataset.decimal === 'true';
-    const duration = 2000;
-    const start = performance.now();
-
-    function easeOutExpo(t) {
-      return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-    }
-
-    function update(now) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutExpo(progress);
-      const current = easedProgress * target;
-
-      if (isDecimal) {
-        el.textContent = current.toFixed(1) + suffix;
-      } else if (target >= 1000) {
-        el.textContent = Math.floor(current / 1000) + 'K' + suffix;
-      } else {
-        el.textContent = Math.floor(current) + suffix;
-      }
-
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      }
-    }
-
-    requestAnimationFrame(update);
-  }
-
-  // ===== 3D TILT EFFECT ON CARDS =====
-  function init3DTilt() {
-    const cards = document.querySelectorAll('.feature-card, .price-card');
-    cards.forEach(card => {
+  // 3D tilt cards
+  function initTiltCards() {
+    document.querySelectorAll('.feature-card, .price-card').forEach(card => {
+      card.classList.add('tilt-card');
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -6;
-        const rotateY = ((x - centerX) / centerX) * 6;
-
-        card.style.transform = `translateY(-6px) scale(1.02) perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(900px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
       });
-
       card.addEventListener('mouseleave', () => {
         card.style.transform = '';
       });
     });
   }
 
-  // ===== PARALLAX ON HERO =====
+  // Cursor glow
+  function initCursorGlow() {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const glow = document.createElement('div');
+    glow.className = 'cursor-glow';
+    document.body.appendChild(glow);
+
+    let mouseX = 0, mouseY = 0, glowX = 0, glowY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      glow.classList.add('active');
+    });
+    document.addEventListener('mouseleave', () => glow.classList.remove('active'));
+
+    function animate() {
+      glowX += (mouseX - glowX) * 0.08;
+      glowY += (mouseY - glowY) * 0.08;
+      glow.style.left = glowX + 'px';
+      glow.style.top = glowY + 'px';
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // Parallax scroll
   function initParallax() {
-    const hero = document.querySelector('.hero');
-    const orbs = document.querySelectorAll('.hero-orb');
-    const grid = document.querySelector('.hero-grid');
-    if (!hero || !orbs.length) return;
-
-    hero.addEventListener('mousemove', (e) => {
-      const rect = hero.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-
-      orbs.forEach((orb, i) => {
-        const factor = (i + 1) * 15;
-        orb.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
-      });
-
-      if (grid) {
-        grid.style.transform = `translate(${x * 8}px, ${y * 8}px)`;
-      }
+    document.querySelectorAll('.hero-glow, .hero-orb-1, .hero-orb-2, .hero-orb-3').forEach(el => {
+      el.classList.add('parallax-float');
     });
 
-    hero.addEventListener('mouseleave', () => {
-      orbs.forEach(orb => {
-        orb.style.transform = '';
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      document.querySelectorAll('.parallax-float').forEach((el, i) => {
+        const speed = 0.1 + (i % 3) * 0.05;
+        el.style.transform = `translateY(${y * speed}px)`;
       });
-      if (grid) {
-        grid.style.transform = '';
-      }
+    }, { passive: true });
+  }
+
+  // Ripple effect
+  function initRipple() {
+    document.querySelectorAll('.btn-primary, .btn-outline, .tbl-btn').forEach(btn => {
+      btn.classList.add('ripple');
+      btn.addEventListener('click', function(e) {
+        const circle = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        circle.style.width = circle.style.height = size + 'px';
+        circle.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        circle.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        this.appendChild(circle);
+        setTimeout(() => circle.remove(), 600);
+      });
     });
+  }
+
+  // Liquid button effect
+  function initLiquidButtons() {
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+      btn.classList.add('liquid-btn');
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        btn.style.setProperty('--x', ((e.clientX - rect.left) / rect.width * 100) + '%');
+        btn.style.setProperty('--y', ((e.clientY - rect.top) / rect.height * 100) + '%');
+      });
+    });
+  }
+
+  // Scroll progress bar
+  function initScrollProgress() {
+    const bar = document.createElement('div');
+    bar.className = 'scroll-progress';
+    document.body.appendChild(bar);
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (scrollTop / docHeight * 100) + '%';
+    }, { passive: true });
   }
 
   // Run on DOM ready
@@ -198,9 +185,9 @@
     interceptLinks();
     initScrollReveal();
     initNavbarScroll();
-    initParticles();
-    initCounters();
-    init3DTilt();
-    initParallax();
+    initMagneticButtons();
+    initTiltCards();
+    // Keep the experience smooth and readable: avoid overloading with heavy effects.
+    initScrollProgress();
   });
 })();

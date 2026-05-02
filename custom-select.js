@@ -139,7 +139,10 @@ function initCustomSelects() {
     const instance = new CustomSelect(el, options, def, (val) => {
       if (targetId) {
         const target = document.getElementById(targetId);
-        if (target) target.value = val;
+        if (target) {
+          target.value = val;
+          target.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
     });
 

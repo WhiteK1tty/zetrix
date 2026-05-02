@@ -190,18 +190,22 @@
               <div class="gen-row">
                 <div class="form-group">
                   <label class="form-label">Тип плана</label>
-                  <input type="hidden" id="genPlan" value="Базовый" />
-                  <div data-custom-select data-options="Базовый,Премиум,VIP" data-value="Базовый" data-target="genPlan"></div>
+                  <input type="hidden" id="genPlan" value="30 дней" />
+                  <div data-custom-select data-options="30 дней,90 дней,Навсегда" data-value="30 дней" data-target="genPlan" id="genPlanSelect"></div>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Срок действия (дней)</label>
-                  <input type="number" class="form-input" id="genDays" value="30" min="1" max="365" />
+                  <input type="number" class="form-input" id="genDays" value="30" min="0" max="365" readonly style="opacity:0.7;cursor:not-allowed" />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Количество ключей</label>
                   <input type="number" class="form-input" id="genCount" value="1" min="1" max="100" />
                 </div>
                 <div class="form-group">
+                  <label class="form-label">Макс. активаций</label>
+                  <input type="number" class="form-input" id="genMaxUses" value="1" min="1" max="999" />
+                </div>
+                <div class="form-group" style="flex:2;min-width:200px">
                   <label class="form-label">Примечание</label>
                   <input type="text" class="form-input" id="genNote" placeholder="Необязательно" />
                 </div>
@@ -221,9 +225,9 @@
               </div>
               <div class="table-filters">
                 <button class="filter-btn active" onclick="filterKeysByPlan('all', this)">Все</button>
-                <button class="filter-btn" onclick="filterKeysByPlan('Базовый', this)">Базовый</button>
-                <button class="filter-btn" onclick="filterKeysByPlan('Премиум', this)">Премиум</button>
-                <button class="filter-btn" onclick="filterKeysByPlan('VIP', this)">VIP</button>
+                <button class="filter-btn" onclick="filterKeysByPlan('30 дней', this)">30 дней</button>
+                <button class="filter-btn" onclick="filterKeysByPlan('90 дней', this)">90 дней</button>
+                <button class="filter-btn" onclick="filterKeysByPlan('Навсегда', this)">Навсегда</button>
               </div>
             </div>
             <div class="table-wrap">
@@ -231,7 +235,7 @@
                 <thead>
                   <tr>
                     <th>Ключ</th><th>План</th><th>Срок</th><th>Статус</th>
-                    <th>Примечание</th><th>Создан</th><th>Действия</th>
+                    <th>Активации</th><th>Примечание</th><th>Создан</th><th>Действия</th>
                   </tr>
                 </thead>
                 <tbody id="keysTableBody"></tbody>
@@ -381,8 +385,8 @@
         </div>
         <div class="form-group">
           <label class="form-label">План</label>
-          <input type="hidden" id="editPlan" value="Базовый" />
-          <div id="editPlanSelect" data-custom-select data-options="Базовый,Премиум,VIP" data-value="Базовый" data-target="editPlan"></div>
+          <input type="hidden" id="editPlan" value="30 дней" />
+          <div id="editPlanSelect" data-custom-select data-options="30 дней,90 дней,Навсегда" data-value="30 дней" data-target="editPlan"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Подписка до</label>

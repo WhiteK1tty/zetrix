@@ -6,6 +6,25 @@ let currentUser = null;
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   ZAuth.onAuthChange(async (firebaseUser) => {
+    // Admin session check — admin uses sessionStorage, not Firebase Auth
+    const adminSession = sessionStorage.getItem('zetrix_admin_session') === 'true';
+    if (adminSession) {
+      currentUser = {
+        username: sessionStorage.getItem('zetrix_admin_login') || 'Admin',
+        email: '',
+        plan: 'Администратор',
+        expiry: '∞',
+        isAdmin: true,
+        keysCount: 0,
+        uid: 'admin'
+      };
+      renderProfile();
+      renderActivity();
+      renderKeysHistory();
+      setupAdminView();
+      return;
+    }
+
     if (!firebaseUser) {
       window.location.href = 'login.html';
       return;
@@ -25,6 +44,37 @@ document.addEventListener('DOMContentLoaded', () => {
     renderKeysHistory();
   });
 });
+
+function setupAdminView() {
+  // Hide user-only sections for admin
+  const activateTab = document.querySelector('.sidebar-link[onclick*="activate"]');
+  const subTab = document.querySelector('.sidebar-link[onclick*="subscription"]');
+  if (activateTab) activateTab.style.display = 'none';
+  if (subTab) subTab.style.display = 'none';
+
+  // Hide settings that don't apply to admin
+  const settingsTab = document.getElementById('tab-settings');
+  if (settingsTab) {
+    settingsTab.innerHTML = `
+      <div class="profile-section-title">Настройки администратора</div>
+      <div class="settings-block">
+        <div class="settings-group-title">Администратор</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.6">
+          Вы вошли как <strong style="color:var(--text-heading)">${currentUser.username}</strong>.<br>
+          Для управления системой перейдите в <a href="admin.html" style="color:var(--primary-light)">Админ-панель</a>.
+        </p>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+          <a href="admin.html" class="btn-primary">Открыть панель</a>
+          <a href="login.html" class="btn-outline" onclick="logout()">Выйти</a>
+        </div>
+      </div>
+    `;
+  }
+
+  // Show admin nav button
+  const adminNavBtn = document.getElementById('adminNavBtn');
+  if (adminNavBtn) adminNavBtn.style.display = 'inline-flex';
+}
 
 function showProfileError(msg) {
   const container = document.querySelector('.profile-container') || document.body;

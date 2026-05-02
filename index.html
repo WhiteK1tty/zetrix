@@ -8,24 +8,39 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="animations.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 </head>
 <body class="page-loaded">
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-logo">
-        <span class="logo-icon" id="logoIcon"></span>
-        <span class="logo-text">Zetrix</span>
+  <!-- Dynamic Background -->
+  <div class="zx-bg">
+    <div class="zx-mesh">
+      <div class="zx-mesh-blob blob-1"></div>
+      <div class="zx-mesh-blob blob-2"></div>
+      <div class="zx-mesh-blob blob-3"></div>
+      <div class="zx-mesh-blob blob-4"></div>
+    </div>
+    <div class="zx-grid"></div>
+    <div class="zx-vignette"></div>
+  </div>
+
+  <!-- Spotlight Follow -->
+  <div class="zx-spotlight" id="spotlight"></div>
+
+  <!-- Navbar -->
+  <nav class="zx-nav" id="zxNav">
+    <div class="zx-nav-inner">
+      <a href="index.html" class="zx-logo">
+        <span class="zx-logo-icon" id="logoIcon"></span>
+        <span class="zx-logo-text">Zetrix</span>
       </a>
-      <ul class="nav-links">
+      <ul class="zx-nav-links">
         <li><a href="index.html" class="active">Главная</a></li>
         <li><a href="#features">Функции</a></li>
         <li><a href="#pricing">Цены</a></li>
         <li><a href="#faq">FAQ</a></li>
       </ul>
-      <div class="nav-actions" id="navActions">
+      <div class="zx-nav-actions" id="navActions">
         <button type="button" class="theme-toggle" id="themeToggle" onclick="ZetrixTheme.toggle()"></button>
         <a href="login.html" class="btn-ghost" id="navLogin">Войти</a>
         <a href="register.html" class="btn-primary" id="navRegister">Регистрация</a>
@@ -35,99 +50,239 @@
     </div>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero" id="home">
-    <div class="hero-mesh">
-      <div class="hero-orb hero-orb-1"></div>
-      <div class="hero-orb hero-orb-2"></div>
-      <div class="hero-orb hero-orb-3"></div>
-    </div>
-    <div class="hero-grid"></div>
-    <div class="hero-glow"></div>
-    <div class="particles-container" id="heroParticles"></div>
-    <div class="hero-content">
-      <div class="hero-badge">Release уже доступен</div>
-      <h1 class="hero-title">Почувствуй<br />преимущество<br />с Zetrix</h1>
-      <p class="hero-sub">Современные функции, топовая защита от банов, высокая производительность и частые обновления. Всё это в Zetrix Client.</p>
-      <div class="hero-buttons">
-        <a href="register.html" class="btn-primary large">
-          <span class="btn-icon" id="iconRocket"></span>
+  <!-- Hero -->
+  <section class="zx-hero" id="home">
+    <div class="zx-hero-inner">
+      <div class="zx-hero-badge reveal-up">
+        <span class="zx-badge-pulse"></span>
+        <span>Release уже доступен</span>
+      </div>
+      <h1 class="zx-hero-title">
+        <span class="zx-title-line reveal-up delay-1">Почувствуй</span>
+        <span class="zx-title-line reveal-up delay-2">преимущество</span>
+        <span class="zx-title-line accent reveal-up delay-3">с Zetrix</span>
+      </h1>
+      <p class="zx-hero-sub reveal-up delay-4">
+        Современные функции, топовая защита от банов, высокая производительность и частые обновления.
+        Всё это в Zetrix Client.
+      </p>
+      <div class="zx-hero-ctas reveal-up delay-5">
+        <a href="register.html" class="btn-primary large glow">
+          <span id="iconRocket"></span>
           Начать сейчас
         </a>
         <a href="#features" class="btn-outline large">
-          <span class="btn-icon" id="iconZap"></span>
-          Функции
+          <span id="iconZap"></span>
+          Узнать больше
         </a>
       </div>
-      <div class="hero-stats">
-        <div class="stat">
-          <span class="stat-num" data-counter="12000">0</span>
-          <span class="stat-label">Пользователей</span>
+      <div class="zx-hero-stats reveal-up delay-6">
+        <div class="zx-stat">
+          <div class="zx-stat-num" data-count="12000">0</div>
+          <div class="zx-stat-label">Пользователей</div>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="stat-num" data-counter="99.9" data-suffix="%" data-decimal="true">0</span>
-          <span class="stat-label">Uptime</span>
+        <div class="zx-stat-divider"></div>
+        <div class="zx-stat">
+          <div class="zx-stat-num">99.9%</div>
+          <div class="zx-stat-label">Uptime</div>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="stat-num" data-counter="50" data-suffix="+">0</span>
-          <span class="stat-label">Функций</span>
+        <div class="zx-stat-divider"></div>
+        <div class="zx-stat">
+          <div class="zx-stat-num" data-count="50">0</div>
+          <div class="zx-stat-label">Функций</div>
+        </div>
+      </div>
+    </div>
+    <div class="zx-hero-scroll">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="zx-section" id="features">
+    <div class="zx-section-inner">
+      <div class="zx-section-header reveal-up">
+        <div class="zx-section-label">Преимущества</div>
+        <h2 class="zx-section-title">Почему выбирают нас</h2>
+        <p class="zx-section-desc">Всё, что нужно для идеального игрового опыта</p>
+      </div>
+      <div class="zx-features-grid">
+        <div class="zx-feature-card reveal-up delay-1" data-tilt data-accent="purple">
+          <div class="zx-fc-orb"></div>
+          <div class="zx-fc-number">01</div>
+          <div class="zx-fc-border"></div>
+          <div class="zx-fc-glow"></div>
+          <div class="zx-fc-top">
+            <div class="zx-fc-icon-bg">
+              <div class="zx-fc-icon" id="fIcon1"></div>
+            </div>
+          </div>
+          <div class="zx-fc-body">
+            <h3>Безопасность</h3>
+            <p>Многоуровневая защита и мягкий обход античитов. Риск блокировки сведён к минимуму.</p>
+            <div class="zx-fc-meta">
+              <span class="zx-fc-tag">Anti-Cheat</span>
+              <span class="zx-fc-tag">HWID</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="zx-feature-card reveal-up delay-2" data-tilt data-accent="blue">
+          <div class="zx-fc-orb"></div>
+          <div class="zx-fc-number">02</div>
+          <div class="zx-fc-border"></div>
+          <div class="zx-fc-glow"></div>
+          <div class="zx-fc-top">
+            <div class="zx-fc-icon-bg">
+              <div class="zx-fc-icon" id="fIcon2"></div>
+            </div>
+          </div>
+          <div class="zx-fc-body">
+            <h3>Обновления</h3>
+            <p>Регулярные апдейты и фиксы выходят быстро. Клиент всегда остаётся актуальным.</p>
+            <div class="zx-fc-meta">
+              <span class="zx-fc-tag">Fast</span>
+              <span class="zx-fc-tag">Auto</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="zx-feature-card reveal-up delay-3" data-tilt data-accent="pink">
+          <div class="zx-fc-orb"></div>
+          <div class="zx-fc-number">03</div>
+          <div class="zx-fc-border"></div>
+          <div class="zx-fc-glow"></div>
+          <div class="zx-fc-top">
+            <div class="zx-fc-icon-bg">
+              <div class="zx-fc-icon" id="fIcon3"></div>
+            </div>
+          </div>
+          <div class="zx-fc-body">
+            <h3>Поддержка</h3>
+            <p>Помощь с настройкой и запуском в любое время. Без шаблонов и долгого ожидания.</p>
+            <div class="zx-fc-meta">
+              <span class="zx-fc-tag">24/7</span>
+              <span class="zx-fc-tag">Live</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="zx-feature-card reveal-up delay-1" data-tilt data-accent="cyan">
+          <div class="zx-fc-orb"></div>
+          <div class="zx-fc-number">04</div>
+          <div class="zx-fc-border"></div>
+          <div class="zx-fc-glow"></div>
+          <div class="zx-fc-top">
+            <div class="zx-fc-icon-bg">
+              <div class="zx-fc-icon" id="fIcon4"></div>
+            </div>
+          </div>
+          <div class="zx-fc-body">
+            <h3>Производительность</h3>
+            <p>Оптимизированный код и минимальная нагрузка на систему. Высокий FPS даже на слабых ПК.</p>
+            <div class="zx-fc-meta">
+              <span class="zx-fc-tag">FPS Boost</span>
+              <span class="zx-fc-tag">Lite</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="zx-feature-card reveal-up delay-2" data-tilt data-accent="green">
+          <div class="zx-fc-orb"></div>
+          <div class="zx-fc-number">05</div>
+          <div class="zx-fc-border"></div>
+          <div class="zx-fc-glow"></div>
+          <div class="zx-fc-top">
+            <div class="zx-fc-icon-bg">
+              <div class="zx-fc-icon" id="fIcon5"></div>
+            </div>
+          </div>
+          <div class="zx-fc-body">
+            <h3>Функционал</h3>
+            <p>50+ модулей и читов для любого режима игры. От PvP до выживания — всё под контролем.</p>
+            <div class="zx-fc-meta">
+              <span class="zx-fc-tag">50+</span>
+              <span class="zx-fc-tag">Modules</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="zx-feature-card reveal-up delay-3" data-tilt data-accent="orange">
+          <div class="zx-fc-orb"></div>
+          <div class="zx-fc-number">06</div>
+          <div class="zx-fc-border"></div>
+          <div class="zx-fc-glow"></div>
+          <div class="zx-fc-top">
+            <div class="zx-fc-icon-bg">
+              <div class="zx-fc-icon" id="fIcon6"></div>
+            </div>
+          </div>
+          <div class="zx-fc-body">
+            <h3>Стабильность</h3>
+            <p>99.9% uptime и стабильная работа без вылетов. Надёжность проверена временем.</p>
+            <div class="zx-fc-meta">
+              <span class="zx-fc-tag">99.9%</span>
+              <span class="zx-fc-tag">Uptime</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FEATURES -->
-  <section class="features" id="features">
-    <div class="section-inner">
-      <div class="section-label reveal">Возможности</div>
-      <h2 class="section-title reveal reveal-delay-1">Всё что нужно для победы</h2>
-      <p class="section-sub reveal reveal-delay-2">Zetrix включает в себя всё необходимое для доминирования на любом сервере</p>
-      <div class="features-grid">
-        <div class="feature-card reveal reveal-delay-1">
-          <div class="feature-icon" id="fIcon1"></div>
-          <h3>KillAura</h3>
-          <p>Автоматическая атака ближайших игроков с настраиваемым радиусом и задержкой</p>
-        </div>
-        <div class="feature-card reveal reveal-delay-2">
-          <div class="feature-icon" id="fIcon3"></div>
-          <h3>AimAssist</h3>
-          <p>Плавная помощь в прицеливании, которая выглядит как игра живого человека</p>
-        </div>
-        <div class="feature-card reveal reveal-delay-3">
-          <div class="feature-icon" id="fIcon4"></div>
-          <h3>AntiCheat Bypass</h3>
-          <p>Обход популярных античитов: NCP, AAC, Grim, Spartan и других</p>
-        </div>
+  <!-- Pricing -->
+  <section class="zx-section alt" id="pricing">
+    <div class="zx-section-inner">
+      <div class="zx-section-header reveal-up">
+        <div class="zx-section-label">Тарифы</div>
+        <h2 class="zx-section-title">Выбери свой план</h2>
+        <p class="zx-section-desc">Доступные цены для каждого игрока</p>
       </div>
-    </div>
-  </section>
+      <div class="zx-pricing-grid">
 
-  <!-- PRICING -->
-  <section class="pricing" id="pricing">
-    <div class="section-inner">
-      <div class="section-label reveal">Тарифы</div>
-      <h2 class="section-title reveal reveal-delay-1">Выбери свой план</h2>
-      <p class="section-sub reveal reveal-delay-2">Доступные цены для каждого игрока</p>
-      <div class="pricing-grid">
-
-        <div class="price-card reveal reveal-delay-1">
-          <div class="price-tier">1 Месяц</div>
-          <div class="price-amount"><span class="price-currency">₽</span>299<span class="price-period">/мес</span></div>
+        <div class="zx-price-card reveal-up delay-1" data-tilt>
+          <div class="zx-pc-shimmer"></div>
+          <div class="zx-pc-top"></div>
+          <div class="zx-pc-tier">30 дней</div>
+          <div class="zx-pc-price">
+            <span class="zx-pc-currency">₽</span>249
+          </div>
+          <ul class="zx-pc-features">
+            <li><span class="zx-pc-check" id="pc1"></span>Все функции</li>
+            <li><span class="zx-pc-check" id="pc2"></span>Обновления</li>
+            <li><span class="zx-pc-check" id="pc3"></span>Поддержка</li>
+          </ul>
           <a href="register.html" class="btn-outline full">Выбрать</a>
         </div>
 
-        <div class="price-card featured reveal reveal-delay-2">
-          <div class="price-badge">Популярный</div>
-          <div class="price-tier">3 Месяца</div>
-          <div class="price-amount"><span class="price-currency">₽</span>599<span class="price-period">/3 мес</span></div>
+        <div class="zx-price-card featured reveal-up delay-2" data-tilt>
+          <div class="zx-pc-shimmer"></div>
+          <div class="zx-pc-badge">Популярный</div>
+          <div class="zx-pc-top"></div>
+          <div class="zx-pc-tier">90 дней</div>
+          <div class="zx-pc-price">
+            <span class="zx-pc-currency">₽</span>399
+          </div>
+          <ul class="zx-pc-features">
+            <li><span class="zx-pc-check" id="pc4"></span>Все функции</li>
+            <li><span class="zx-pc-check" id="pc5"></span>Обновления</li>
+            <li><span class="zx-pc-check" id="pc6"></span>Приоритетная поддержка</li>
+          </ul>
           <a href="register.html" class="btn-primary full">Выбрать</a>
         </div>
 
-        <div class="price-card reveal reveal-delay-3">
-          <div class="price-tier">Навсегда</div>
-          <div class="price-amount"><span class="price-currency">₽</span>999<span class="price-period"> навсегда</span></div>
+        <div class="zx-price-card reveal-up delay-3" data-tilt>
+          <div class="zx-pc-shimmer"></div>
+          <div class="zx-pc-top"></div>
+          <div class="zx-pc-tier">Навсегда</div>
+          <div class="zx-pc-price">
+            <span class="zx-pc-currency">₽</span>649
+          </div>
+          <ul class="zx-pc-features">
+            <li><span class="zx-pc-check" id="pc7"></span>Все функции навсегда</li>
+            <li><span class="zx-pc-check" id="pc8"></span>Все обновления</li>
+            <li><span class="zx-pc-check" id="pc9"></span>VIP поддержка</li>
+          </ul>
           <a href="register.html" class="btn-outline full">Выбрать</a>
         </div>
 
@@ -136,24 +291,26 @@
   </section>
 
   <!-- FAQ -->
-  <section class="faq" id="faq">
-    <div class="section-inner narrow">
-      <div class="section-label reveal">FAQ</div>
-      <h2 class="section-title reveal reveal-delay-1">Частые вопросы</h2>
-      <div class="faq-list">
-        <details class="faq-item reveal reveal-delay-1">
+  <section class="zx-section" id="faq">
+    <div class="zx-section-inner narrow">
+      <div class="zx-section-header reveal-up">
+        <div class="zx-section-label">FAQ</div>
+        <h2 class="zx-section-title">Частые вопросы</h2>
+      </div>
+      <div class="zx-faq-list">
+        <details class="zx-faq-item reveal-up delay-1">
           <summary>Безопасно ли использовать Zetrix?</summary>
           <p>Да, наш клиент использует продвинутые методы обхода античитов. Мы регулярно обновляем защиту, чтобы минимизировать риск бана.</p>
         </details>
-        <details class="faq-item reveal reveal-delay-2">
+        <details class="zx-faq-item reveal-up delay-2">
           <summary>Какие версии Minecraft поддерживаются?</summary>
           <p>Zetrix поддерживает версии от 1.8 до 1.20.x. Мы добавляем поддержку новых версий в течение нескольких дней после их выхода.</p>
         </details>
-        <details class="faq-item reveal reveal-delay-3">
+        <details class="zx-faq-item reveal-up delay-3">
           <summary>Как активировать ключ после оплаты?</summary>
           <p>После оплаты вы получите лицензионный ключ. Зайдите в личный кабинет, перейдите в раздел «Активация ключа» и введите полученный код.</p>
         </details>
-        <details class="faq-item reveal reveal-delay-4">
+        <details class="zx-faq-item reveal-up delay-4">
           <summary>Есть ли возврат средств?</summary>
           <p>Мы предоставляем возврат в течение 24 часов после покупки, если клиент не работает на вашем устройстве и наша поддержка не смогла помочь.</p>
         </details>
@@ -161,20 +318,20 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-logo">
-        <span class="logo-icon" id="footerLogoIcon"></span>
-        <span class="logo-text">Zetrix</span>
+  <!-- Footer -->
+  <footer class="zx-footer">
+    <div class="zx-footer-inner">
+      <div class="zx-footer-brand">
+        <span class="zx-logo-icon" id="footerLogoIcon"></span>
+        <span class="zx-logo-text">Zetrix</span>
       </div>
-      <div class="footer-links">
+      <div class="zx-footer-links">
         <a href="#">Политика конфиденциальности</a>
         <a href="#">Условия использования</a>
         <a href="#">Discord</a>
         <a href="#">Telegram</a>
       </div>
-      <p class="footer-copy">© 2026 Zetrix Client. Только для образовательных целей.</p>
+      <p class="zx-footer-copy">© 2026 Zetrix Client. Только для образовательных целей.</p>
     </div>
   </footer>
 
@@ -182,7 +339,6 @@
     import { auth } from './firebase-config.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // Показываем профиль/выйти если вошёл, иначе вход/регистрация
     onAuthStateChanged(auth, (user) => {
       const loginBtn    = document.getElementById('navLogin');
       const registerBtn = document.getElementById('navRegister');
@@ -207,18 +363,81 @@
   <script src="transitions.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Inject SVG icons
       document.getElementById('logoIcon').innerHTML       = Icons.logo;
       document.getElementById('footerLogoIcon').innerHTML = Icons.logo;
       document.getElementById('iconRocket').innerHTML     = Icons.rocket;
       document.getElementById('iconZap').innerHTML        = Icons.zap;
-      document.getElementById('fIcon1').innerHTML = Icons.sword;
-      document.getElementById('fIcon3').innerHTML = Icons.target;
-      document.getElementById('fIcon4').innerHTML = Icons.shield;
+      document.getElementById('fIcon1').innerHTML = Icons.shieldCheck;
+      document.getElementById('fIcon2').innerHTML = Icons.refreshCw;
+      document.getElementById('fIcon3').innerHTML = Icons.messageCircle;
+      document.getElementById('fIcon4').innerHTML = Icons.cpu;
+      document.getElementById('fIcon5').innerHTML = Icons.code;
+      document.getElementById('fIcon6').innerHTML = Icons.trendingUp;
 
-      // Price check icons
-      ['pc1','pc2','pc3','pc4','pc5','pc6','pc7','pc8','pc9','pc10','pc11','pc12','pc13','pc14','pc15']
+      ['pc1','pc2','pc3','pc4','pc5','pc6','pc7','pc8','pc9']
         .forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = Icons.check; });
+
+      // Spotlight follow
+      const spotlight = document.getElementById('spotlight');
+      if (spotlight && !window.matchMedia('(pointer: coarse)').matches) {
+        document.addEventListener('mousemove', (e) => {
+          spotlight.style.left = e.clientX + 'px';
+          spotlight.style.top = e.clientY + 'px';
+        });
+      }
+
+      // 3D tilt cards
+      document.querySelectorAll('[data-tilt]').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const cx = rect.width / 2;
+          const cy = rect.height / 2;
+          const rx = (y - cy) / cy * -8;
+          const ry = (x - cx) / cx * 8;
+          card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(10px) scale(1.02)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+        });
+      });
+
+      // Count up animation
+      document.querySelectorAll('.zx-stat-num[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count);
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              let current = 0;
+              const increment = target / 40;
+              const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                  el.textContent = target >= 1000 ? (target/1000).toFixed(0) + 'K+' : target + '+';
+                  clearInterval(timer);
+                } else {
+                  el.textContent = Math.floor(current);
+                }
+              }, 30);
+              observer.unobserve(el);
+            }
+          });
+        }, { threshold: 0.5 });
+        observer.observe(el);
+      });
+
+      // Reveal on scroll
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
     });
   </script>
 </body>

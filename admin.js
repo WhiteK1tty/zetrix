@@ -30,6 +30,14 @@ async function showPanel() {
   await renderUsersTable();
   await renderLogsTable();
   setTimeout(() => initCustomSelects(), 50);
+
+  // Auto-update days field when plan changes
+  const planInput = document.getElementById('genPlan');
+  if (planInput) {
+    planInput.addEventListener('input', (e) => {
+      document.getElementById('genDays').value = getDaysFromPlan(e.target.value);
+    });
+  }
 }
 
 async function handleAdminLogin(e) {
@@ -78,17 +86,33 @@ window.adminLogout = adminLogout;
 function adminTab(tabId, el) {
   const current = document.querySelector('.admin-tab.active');
   const next    = document.getElementById('tab-' + tabId);
-  if (current === next) return;
+  if (!current || current === next) return;
 
+  // Fade out current
   current.style.opacity    = '0';
   current.style.transform  = 'translateY(8px)';
-  current.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+  current.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
 
   setTimeout(() => {
     current.classList.remove('active');
     current.style.cssText = '';
+
+    // Prepare next tab: render invisible first
     next.classList.add('active');
-  }, 180);
+    next.style.opacity   = '0';
+    next.style.transform = 'translateY(12px)';
+
+    // Force reflow so browser registers the starting state
+    void next.offsetHeight;
+
+    // Trigger transition to visible
+    next.style.transition = 'opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+    next.style.opacity    = '1';
+    next.style.transform  = 'translateY(0)';
+
+    // Clean up inline styles after transition completes
+    setTimeout(() => { next.style.cssText = ''; }, 360);
+  }, 200);
 
   document.querySelectorAll('.admin-link').forEach(l => l.classList.remove('active'));
   el.classList.add('active');
@@ -123,7 +147,7 @@ async function renderDashboard() {
           <div class="dli-name">${escHtml(u.username)}</div>
           <div class="dli-meta">${escHtml(u.email || 'Нет email')}</div>
         </div>
-        <span class="dli-badge ${(u.plan||'').toLowerCase()}">${u.plan || 'Нет'}</span>
+        <span class="dli-badge ${planClass(u.plan)}">${u.plan || 'Нет'}</span>
       </div>`).join('') || '<div class="table-empty">Нет пользователей</div>';
 
     const logs = await ZAdmin.getLogs();
@@ -148,13 +172,14 @@ async function renderKeysTable(filter = keysFilter) {
   tbody.innerHTML = `<tr><td colspan="7" class="table-empty">Загрузка...</td></tr>`;
   try {
     const keys = await ZAdmin.getKeys(filter.search, filter.plan);
-    if (!keys.length) { tbody.innerHTML = `<tr><td colspan="7" class="table-empty">Ключи не найдены</td></tr>`; return; }
+    if (!keys.length) { tbody.innerHTML = `<tr><td colspan="8" class="table-empty">Ключи не найдены</td></tr>`; return; }
     tbody.innerHTML = keys.map(k => `
       <tr>
         <td><span class="table-key">${escHtml(k.keyValue)}</span></td>
-        <td><span class="table-badge ${(k.plan||'').toLowerCase()}">${k.plan}</span></td>
-        <td>${k.days} дн.</td>
+        <td><span class="table-badge ${planClass(k.plan)}">${k.plan}</span></td>
+        <td>${k.days > 0 ? k.days + ' дн.' : '∞'}</td>
         <td><span class="table-badge ${k.status}">${statusLabel(k.status)}</span></td>
+        <td>${(k.usedCount || 0)} / ${k.maxUses || 1}</td>
         <td>${escHtml(k.note || '—')}</td>
         <td>${formatTs(k.createdAt)}</td>
         <td>
@@ -164,7 +189,7 @@ async function renderKeysTable(filter = keysFilter) {
           </div>
         </td>
       </tr>`).join('');
-  } catch (err) { tbody.innerHTML = `<tr><td colspan="7" class="table-empty">Ошибка загрузки</td></tr>`; }
+  } catch (err) { tbody.innerHTML = `<tr><td colspan="8" class="table-empty">Ошибка загрузки</td></tr>`; }
 }
 
 function filterKeys(val)              { renderKeysTable({ ...keysFilter, search: val }); }
@@ -182,14 +207,23 @@ function closeGenerateKey() { document.getElementById('generateCard').style.disp
 window.openGenerateKey  = openGenerateKey;
 window.closeGenerateKey = closeGenerateKey;
 
+function getDaysFromPlan(plan) {
+  if (plan === '30 дней') return 30;
+  if (plan === '90 дней') return 90;
+  if (plan === 'Навсегда') return 0;
+  return 30;
+}
+window.getDaysFromPlan = getDaysFromPlan;
+
 async function generateKeys() {
   const plan  = document.getElementById('genPlan').value;
-  const days  = parseInt(document.getElementById('genDays').value) || 30;
+  const days  = getDaysFromPlan(plan);
   const count = Math.min(parseInt(document.getElementById('genCount').value) || 1, 100);
+  const maxUses = parseInt(document.getElementById('genMaxUses').value) || 1;
   const note  = document.getElementById('genNote').value.trim();
 
   try {
-    const created = await ZAdmin.createKeys(plan, days, count, note);
+    const created = await ZAdmin.createKeys(plan, days, count, note, maxUses);
     await renderKeysTable();
     await renderDashboard();
     closeGenerateKey();
@@ -240,7 +274,7 @@ async function renderUsersTable(search = usersSearch) {
           </div>
         </td>
         <td>${escHtml(u.email || '—')}</td>
-        <td><span class="table-badge ${(u.plan||'нет').toLowerCase()}">${u.plan || 'Нет'}</span></td>
+        <td><span class="table-badge ${planClass(u.plan)}">${u.plan || 'Нет'}</span></td>
         <td>${u.expiry || '—'}</td>
         <td>${u.keysCount || 0}</td>
         <td>
@@ -416,6 +450,14 @@ function trashIcon() { return `<svg width="14" height="14" viewBox="0 0 24 24" f
 function copyIcon()  { return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`; }
 function editIcon()  { return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`; }
 function statusLabel(s) { return { active: 'Активен', used: 'Использован', expired: 'Истёк' }[s] || s; }
+function planClass(plan) {
+  if (!plan) return '';
+  if (plan.includes('30')) return 'basic';
+  if (plan.includes('90')) return 'premium';
+  if (plan.includes('Навсегда')) return 'vip';
+  return plan.toLowerCase();
+}
+window.planClass = planClass;
 function pluralKeys(n) {
   if (n % 10 === 1 && n % 100 !== 11) return 'ключ';
   if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'ключа';

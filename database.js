@@ -207,6 +207,10 @@ export const ZKeys = {
 
     if (keyData.status !== 'active') throw new Error('Этот ключ уже был использован или истёк');
 
+    const maxUses = keyData.maxUses || 1;
+    const usedCount = (keyData.usedCount || 0);
+    if (usedCount >= maxUses) throw new Error('Лимит активаций исчерпан');
+
     // Вычислить дату окончания
     let expiry = 'Навсегда';
     if (keyData.days > 0) {
@@ -215,13 +219,17 @@ export const ZKeys = {
       expiry = d.toLocaleDateString('ru-RU');
     }
 
+    const newUsedCount = usedCount + 1;
+    const newStatus = newUsedCount >= maxUses ? 'used' : 'active';
+
     // Транзакция: обновить ключ + пользователя + добавить активацию
     const batch = writeBatch(db);
 
     batch.update(doc(db, 'license_keys', keyDoc.id), {
-      status:   'used',
-      usedBy:   uid,
-      usedAt:   serverTimestamp()
+      status:    newStatus,
+      usedBy:    uid,
+      usedAt:    serverTimestamp(),
+      usedCount: newUsedCount
     });
 
     batch.update(doc(db, 'users', uid), {
@@ -340,7 +348,7 @@ export const ZAdmin = {
     return keys.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
   },
 
-  async createKeys(plan, days, count, note) {
+  async createKeys(plan, days, count, note, maxUses = 1) {
     const batch   = writeBatch(db);
     const created = [];
     for (let i = 0; i < Math.min(count, 100); i++) {
@@ -354,13 +362,15 @@ export const ZAdmin = {
         note:      note || null,
         usedBy:    null,
         usedAt:    null,
+        usedCount: 0,
+        maxUses:   Math.max(1, parseInt(maxUses) || 1),
         createdBy: 'Admin',
         createdAt: serverTimestamp()
       });
       created.push(key);
     }
     await batch.commit();
-    await addLog('key', `Создано ключей: ${count}`, 'Admin', `${plan} / ${days} дней`);
+    await addLog('key', `Создано ключей: ${count}`, 'Admin', `${plan} / ${days} дн. / макс. активаций: ${maxUses}`);
     return created;
   },
 
@@ -416,11 +426,13 @@ function generateKey(plan) {
   // Маппинг: все возможные названия планов -> prefix для ключа
   const prefixMap = {
     'Навсегда': 'VIP',
-    '3 Месяца': 'PREMIUM',
-    '1 Месяц': 'BASIC',
+    '90 дней': 'PREMIUM',
+    '30 дней': 'BASIC',
     'VIP': 'VIP',
     'Премиум': 'PREMIUM',
     'Базовый': 'BASIC',
+    '3 Месяца': 'PREMIUM',
+    '1 Месяц': 'BASIC',
     // Legacy/альтернативные названия
     'VIP00': 'VIP',
     'PREMI': 'PREMIUM',
@@ -429,13 +441,12 @@ function generateKey(plan) {
     '3 Месяца (Премиум)': 'PREMIUM',
     '1 Месяц (Базовый)': 'BASIC',
   };
-  // Ищем по части названия (например "Навсегда" содержит "VIP")
+  // Ищем по части названия
   let prefix = prefixMap[plan];
   if (!prefix) {
-    // Фоллбек: если в названии есть "Навсегда" или "VIP" - это VIP
     if (plan.includes('Навсегда') || plan.includes('VIP')) prefix = 'VIP';
-    else if (plan.includes('3 Месяца') || plan.includes('Премиум')) prefix = 'PREMIUM';
-    else if (plan.includes('1 Месяца') || plan.includes('Базовый')) prefix = 'BASIC';
+    else if (plan.includes('90') || plan.includes('Премиум') || plan.includes('3 Месяца')) prefix = 'PREMIUM';
+    else if (plan.includes('30') || plan.includes('Базовый') || plan.includes('1 Месяц')) prefix = 'BASIC';
     else prefix = 'BASIC';
   }
   const rand = () => Math.random().toString(36).substring(2, 7).toUpperCase();

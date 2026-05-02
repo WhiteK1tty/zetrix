@@ -11,9 +11,14 @@ window.togglePassword = togglePassword;
 
 // ===== PASSWORD STRENGTH =====
 function checkPasswordStrength(value) {
-  const fill  = document.getElementById('strengthFill');
+  const segments = [
+    document.getElementById('sf1'),
+    document.getElementById('sf2'),
+    document.getElementById('sf3'),
+    document.getElementById('sf4')
+  ];
   const label = document.getElementById('strengthLabel');
-  if (!fill || !label) return;
+  if (!segments[0] || !label) return;
 
   let strength = 0;
   if (value.length >= 8)          strength++;
@@ -22,18 +27,33 @@ function checkPasswordStrength(value) {
   if (/[^A-Za-z0-9]/.test(value)) strength++;
 
   const levels = [
-    { pct: '0%',   color: 'transparent', text: 'Введите пароль' },
-    { pct: '25%',  color: '#ef4444',     text: 'Слабый' },
-    { pct: '50%',  color: '#f97316',     text: 'Средний' },
-    { pct: '75%',  color: '#eab308',     text: 'Хороший' },
-    { pct: '100%', color: '#22c55e',     text: 'Надёжный' },
+    { color: 'transparent', text: 'Введите пароль', glow: 'none' },
+    { color: '#ef4444',     text: 'Слабый',         glow: '0 0 8px rgba(239,68,68,0.4)' },
+    { color: '#f97316',     text: 'Средний',        glow: '0 0 8px rgba(249,115,22,0.4)' },
+    { color: '#eab308',     text: 'Хороший',        glow: '0 0 8px rgba(234,179,8,0.4)' },
+    { color: '#22c55e',     text: 'Надёжный',       glow: '0 0 8px rgba(34,197,94,0.4)' },
   ];
 
   const lvl = value.length === 0 ? levels[0] : levels[strength];
-  fill.style.width      = lvl.pct;
-  fill.style.background = lvl.color;
-  label.textContent     = lvl.text;
-  label.style.color     = lvl.color;
+
+  segments.forEach((seg, i) => {
+    if (value.length === 0) {
+      seg.style.background = 'var(--glass-08)';
+      seg.style.boxShadow = 'none';
+      seg.classList.remove('active');
+    } else if (i < strength) {
+      seg.style.background = lvl.color;
+      seg.style.boxShadow = lvl.glow;
+      seg.classList.add('active');
+    } else {
+      seg.style.background = 'var(--glass-08)';
+      seg.style.boxShadow = 'none';
+      seg.classList.remove('active');
+    }
+  });
+
+  label.textContent = lvl.text;
+  label.style.color = lvl.color;
 }
 window.checkPasswordStrength = checkPasswordStrength;
 

@@ -178,8 +178,8 @@
 
         <div class="pricing-grid sub-plans">
           <div class="price-card">
-            <div class="price-tier">Базовый</div>
-            <div class="price-amount"><span class="price-currency">₽</span>299<span class="price-period">/мес</span></div>
+            <div class="price-tier">30 дней</div>
+            <div class="price-amount"><span class="price-currency">₽</span>249</div>
             <ul class="price-features">
               <li><span class="pf-check" id="spc1"></span> KillAura</li>
               <li><span class="pf-check" id="spc2"></span> Speed</li>
@@ -192,10 +192,10 @@
           </div>
           <div class="price-card featured">
             <div class="price-badge">Популярный</div>
-            <div class="price-tier">Премиум</div>
-            <div class="price-amount"><span class="price-currency">₽</span>599<span class="price-period">/мес</span></div>
+            <div class="price-tier">90 дней</div>
+            <div class="price-amount"><span class="price-currency">₽</span>399</div>
             <ul class="price-features">
-              <li><span class="pf-check" id="spc5"></span> Все функции Базового</li>
+              <li><span class="pf-check" id="spc5"></span> Все функции 30 дней</li>
               <li><span class="pf-check" id="spc6"></span> AntiCheat Bypass</li>
               <li><span class="pf-check" id="spc7"></span> Fly & Scaffold</li>
               <li><span class="pf-check" id="spc8"></span> AimAssist</li>
@@ -205,10 +205,10 @@
             <button class="btn-primary full" onclick="alert('Перейдите на страницу оплаты')">Выбрать</button>
           </div>
           <div class="price-card">
-            <div class="price-tier">VIP</div>
-            <div class="price-amount"><span class="price-currency">₽</span>999<span class="price-period">/мес</span></div>
+            <div class="price-tier">Навсегда</div>
+            <div class="price-amount"><span class="price-currency">₽</span>649</div>
             <ul class="price-features">
-              <li><span class="pf-check" id="spc10"></span> Все функции Премиум</li>
+              <li><span class="pf-check" id="spc10"></span> Все функции 90 дней</li>
               <li><span class="pf-check" id="spc11"></span> Приоритетная поддержка</li>
               <li><span class="pf-check" id="spc12"></span> Ранний доступ</li>
               <li><span class="pf-check" id="spc13"></span> Discord роль VIP</li>
@@ -325,17 +325,13 @@
       ['spx1','spx2','spx3']
         .forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = Icons.x; });
 
-      // Show admin button only for ADMINSYSTEM
+      // Show admin button for logged-in admin
       const adminNavBtn  = document.getElementById('adminNavBtn');
       const adminNavIcon = document.getElementById('adminNavIcon');
       if (adminNavIcon) adminNavIcon.innerHTML = Icons.settings;
-      try {
-        const u = JSON.parse(localStorage.getItem('zetrix_user'));
-        const creds = JSON.parse(localStorage.getItem('zetrix_admin_creds')) || { login: 'ADMINSYSTEM' };
-        if (u && u.username === creds.login && adminNavBtn) {
-          adminNavBtn.style.display = 'inline-flex';
-        }
-      } catch {}
+      if (adminNavBtn && sessionStorage.getItem('zetrix_admin_session') === 'true') {
+        adminNavBtn.style.display = 'inline-flex';
+      }
     });
   </script>
 </body>
