@@ -1106,6 +1106,24 @@ a {
     radial-gradient(ellipse 400px 300px at 50% 90%, rgba(139, 92, 246, 0.1), transparent 70%);
 }
 
+/* Subtle animated gradient mesh */
+.auth-page::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.04) 0%, transparent 40%, rgba(99, 102, 241, 0.03) 50%, transparent 60%, rgba(139, 92, 246, 0.04) 100%);
+  background-size: 300% 300%;
+  animation: authMeshGradient 18s ease-in-out infinite;
+}
+
+@keyframes authMeshGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 .auth-orb {
   position: fixed;
   border-radius: 50%;
@@ -1486,6 +1504,58 @@ a {
   transform: rotate(45deg) translate(-1px, -1px);
 }
 
+/* CAPTCHA */
+.captcha-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.captcha-image-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.captcha-img {
+  border-radius: 12px;
+  border: 1.5px solid rgba(167, 139, 250, 0.15);
+  background: linear-gradient(135deg, rgba(18, 11, 32, 0.8), rgba(12, 8, 22, 0.9));
+  height: 52px;
+  width: auto;
+  image-rendering: crisp-edges;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.captcha-refresh {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--glass-04);
+  border: 1.5px solid var(--glass-08);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  flex-shrink: 0;
+}
+
+.captcha-refresh:hover {
+  background: rgba(124, 58, 237, 0.12);
+  border-color: rgba(124, 58, 237, 0.3);
+  color: var(--primary-light);
+  transform: rotate(180deg);
+}
+
+.captcha-input {
+  text-align: center;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
 .auth-submit {
   margin-top: 4px;
   justify-content: center;
@@ -1579,6 +1649,21 @@ a {
 .profile-page {
   background: var(--bg-base);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle animated gradient mesh */
+.profile-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.03) 0%, transparent 40%, rgba(99, 102, 241, 0.025) 50%, transparent 60%, rgba(139, 92, 246, 0.03) 100%);
+  background-size: 300% 300%;
+  animation: authMeshGradient 18s ease-in-out infinite;
 }
 
 .profile-wrap {
@@ -2472,6 +2557,18 @@ a {
   overflow: hidden;
 }
 
+/* Soft radial glow spots (same as auth pages) */
+.zx-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 20%, rgba(124, 58, 237, 0.18), transparent 70%),
+    radial-gradient(ellipse 500px 400px at 80% 60%, rgba(99, 102, 241, 0.14), transparent 70%),
+    radial-gradient(ellipse 400px 300px at 50% 90%, rgba(139, 92, 246, 0.1), transparent 70%);
+  z-index: 0;
+}
+
 .zx-mesh {
   position: absolute;
   inset: 0;
@@ -2551,6 +2648,23 @@ a {
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse at center, transparent 0%, var(--bg-base) 85%);
+}
+
+/* Animated gradient mesh overlay */
+.zx-gradient-mesh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, transparent 35%, rgba(99, 102, 241, 0.04) 50%, transparent 65%, rgba(139, 92, 246, 0.05) 100%);
+  background-size: 300% 300%;
+  animation: meshGradientShift 20s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes meshGradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 /* Spotlight */

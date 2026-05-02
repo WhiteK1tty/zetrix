@@ -67,6 +67,14 @@ function setButtonLoading(btn, text) {
 // ===== LOGIN =====
 async function handleLogin(e) {
   e.preventDefault();
+
+  // Validate CAPTCHA first
+  const captchaResult = Captcha.validate('loginCaptcha');
+  if (!captchaResult.valid) {
+    showAuthError(captchaResult.error);
+    return;
+  }
+
   const btn      = e.target.querySelector('.auth-submit');
   const inputEl  = document.getElementById('loginIdentifier');
   const input    = inputEl ? inputEl.value.trim() : '';
@@ -117,6 +125,14 @@ window.handleLogin = handleLogin;
 // ===== REGISTER =====
 async function handleRegister(e) {
   e.preventDefault();
+
+  // Validate CAPTCHA first
+  const captchaResult = Captcha.validate('regCaptcha');
+  if (!captchaResult.valid) {
+    showAuthError(captchaResult.error);
+    return;
+  }
+
   const password = document.getElementById('regPassword').value;
   const confirm  = document.getElementById('regPasswordConfirm').value;
 

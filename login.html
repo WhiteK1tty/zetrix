@@ -65,6 +65,11 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label class="form-label">Проверка безопасности</label>
+          <div id="loginCaptcha"></div>
+        </div>
+
         <div class="form-check">
           <label class="check-label">
             <input type="checkbox" class="check-input" />
@@ -93,6 +98,7 @@
   </script>
 
   <script src="icons.js"></script>
+  <script src="captcha.js"></script>
   <script src="transitions.js"></script>
   <script src="modal.js"></script>
   <script type="module" src="auth.js"></script>
@@ -103,6 +109,7 @@
       document.getElementById('iconUser').innerHTML     = Icons.user;
       document.getElementById('iconLock').innerHTML     = Icons.lock;
       document.getElementById('toggleLogin').innerHTML  = Icons.eye;
+      Captcha.generate('loginCaptcha');
     });
   </script>
 </body>
