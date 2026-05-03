@@ -105,7 +105,7 @@ function renderProfile() {
 
   // Show admin button only for admin
   const adminBtn = document.getElementById('adminNavBtn');
-  if (adminBtn && u.is_admin) adminBtn.style.display = 'inline-flex';
+  if (adminBtn && Boolean(u.is_admin)) adminBtn.style.display = 'inline-flex';
 }
 
 // ===== TAB SWITCHING =====

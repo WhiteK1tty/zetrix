@@ -7,8 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function isAdminLoggedIn() {
+  // Проверяем токен + флаг админа — sessionStorage опционален
   const user = Api.getUser();
-  return sessionStorage.getItem('zetrix_admin_session') === 'true' && user && user.is_admin;
+  if (!Api.isLoggedIn() || !user) return false;
+  // is_admin из SQLite приходит как 0/1, приводим к boolean
+  return Boolean(user.is_admin);
 }
 
 function getAdminLogin() {
@@ -54,7 +57,8 @@ async function handleAdminLogin(e) {
 
   try {
     const data = await Api.login(login, password);
-    if (data.user.is_admin) {
+    // is_admin из SQLite — число 0/1, приводим к boolean
+    if (Boolean(data.user.is_admin)) {
       sessionStorage.setItem('zetrix_admin_session', 'true');
       sessionStorage.setItem('zetrix_admin_login', data.user.username);
       errEl.style.display = 'none';

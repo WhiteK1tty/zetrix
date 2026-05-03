@@ -1145,7 +1145,7 @@
 
 /* Panel wrap flex layout */
 #adminPanelWrap {
-  display: flex !important;
+  display: flex;
 }
 
 /* ===== ADMIN TOAST ===== */

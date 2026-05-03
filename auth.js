@@ -86,7 +86,7 @@ async function handleLogin(e) {
     const data = await Api.login(input, password);
 
     // Admin bypass via dedicated session
-    if (data.user.is_admin) {
+    if (Boolean(data.user.is_admin)) {
       sessionStorage.setItem('zetrix_admin_session', 'true');
       sessionStorage.setItem('zetrix_admin_login', data.user.username);
       window.location.href = 'admin.html';
