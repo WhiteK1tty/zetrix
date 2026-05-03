@@ -5,13 +5,28 @@
 // Локальная разработка
 const LOCAL_API  = 'http://localhost:3000/api';
 
-// Render продакшен — замени на свой URL после деплоя на Render
+// Render продакшен — ЗАМЕНИ на свой URL после деплоя на Render!
 // Пример: 'https://zetrix-api.onrender.com/api'
 const RENDER_API = 'https://zetrix-api.onrender.com/api';
 
 const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? LOCAL_API
   : RENDER_API;
+
+// Отладка: показываем в консоли куда идут запросы
+console.log('[Api] API_BASE:', API_BASE);
+console.log('[Api] Host:', window.location.hostname);
+console.log('[Api] Protocol:', window.location.protocol);
+
+// Предупреждение если используется дефолтный фейковый URL
+if (API_BASE === 'https://zetrix-api.onrender.com/api') {
+  console.warn('[Api] ВНИМАНИЕ: используется дефолтный URL Render. Замени RENDER_API в api.js на свой реальный URL!');
+}
+
+// Предупреждение если открыто через file://
+if (window.location.protocol === 'file:') {
+  console.warn('[Api] ВНИМАНИЕ: сайт открыт через file://. Для работы API нужен сервер. Открой через http://localhost:3000 или используй Live Server.');
+}
 
 const Api = {
 
@@ -28,11 +43,24 @@ const Api = {
       if (token) headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const res = await fetch(API_BASE + path, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    let res;
+    try {
+      res = await fetch(API_BASE + path, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    } catch (networkErr) {
+      // Сеть недоступна — сервер не запущен, CORS, или нет интернета
+      console.error('[Api] Network error:', networkErr.message);
+      if (API_BASE.includes('localhost')) {
+        throw new Error('Сервер не запущен. Запусти: cd server && node index.js');
+      }
+      if (API_BASE === 'https://zetrix-api.onrender.com/api') {
+        throw new Error('Используется дефолтный URL Render. Открой api.js и замени RENDER_API на свой реальный URL.');
+      }
+      throw new Error('Не удалось подключиться к серверу. Проверь интернет-соединение.');
+    }
 
     const data = await res.json().catch(() => ({}));
 
