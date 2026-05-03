@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: zetrix-api
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+      # Замени на свой домен GitHub Pages, например https://username.github.io
+      # - key: FRONTEND_URL
+      #   value: https://username.github.io

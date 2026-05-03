@@ -1,4 +1,4 @@
-import { ZAuth } from './database.js';
+import { Api } from './api.js';
 
 // ===== TOGGLE PASSWORD =====
 function togglePassword(inputId, btn) {
@@ -83,41 +83,23 @@ async function handleLogin(e) {
   setButtonLoading(btn, 'Входим...');
 
   try {
-    // Check admin credentials first (stored in Firestore settings)
-    let isAdmin = false;
-    try {
-      const { ZAdmin } = await import('./database.js');
-      isAdmin = await ZAdmin.checkCredentials(input, password);
-    } catch (adminErr) {
-      // If admin check fails due to Firestore issues, continue to regular login
-      console.warn('Admin check error:', adminErr.message);
-    }
+    const data = await Api.login(input, password);
 
-    if (isAdmin) {
+    // Admin bypass via dedicated session
+    if (data.user.is_admin) {
       sessionStorage.setItem('zetrix_admin_session', 'true');
-      sessionStorage.setItem('zetrix_admin_login', input);
+      sessionStorage.setItem('zetrix_admin_login', data.user.username);
       window.location.href = 'admin.html';
       return;
     }
 
-    const user  = await ZAuth.loginByIdentifier(input, password);
-
-    sessionStorage.setItem('zetrix_uid', user.uid);
     window.location.href = 'profile.html';
 
   } catch (err) {
     btn.disabled  = false;
     btn.classList.remove('btn-loading');
     btn.textContent = 'Войти в аккаунт';
-
-    // Import error translator if available
-    let msg = err.message || 'Неверный логин/email или пароль';
-    try {
-      const { handleFirestoreError } = await import('./database.js');
-      msg = handleFirestoreError(err);
-    } catch (_) { /* ignore import error */ }
-
-    showAuthError(msg);
+    showAuthError(err.message || 'Неверный логин/email или пароль');
   }
 }
 window.handleLogin = handleLogin;
@@ -149,8 +131,7 @@ async function handleRegister(e) {
   setButtonLoading(btn, 'Создаём аккаунт...');
 
   try {
-    const user = await ZAuth.register(username, emailVal, password);
-    sessionStorage.setItem('zetrix_uid', user.uid);
+    await Api.register(username, emailVal, password);
     window.location.href = 'profile.html';
   } catch (err) {
     btn.disabled  = false;
@@ -175,9 +156,8 @@ function showAuthError(msg) {
 }
 
 // ===== LOGOUT =====
-async function logout() {
-  await ZAuth.logout();
-  sessionStorage.removeItem('zetrix_uid');
+function logout() {
+  Api.logout();
   sessionStorage.removeItem('zetrix_admin_session');
 }
 window.logout = logout;

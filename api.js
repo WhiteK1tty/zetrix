@@ -1,7 +1,17 @@
 // ===== ZETRIX API CLIENT =====
 // Connects frontend to the Node.js + SQLite backend
 
-const API_BASE = 'http://localhost:3000/api';
+// === КОНФИГУРАЦИЯ API ===
+// Локальная разработка
+const LOCAL_API  = 'http://localhost:3000/api';
+
+// Render продакшен — замени на свой URL после деплоя на Render
+// Пример: 'https://zetrix-api.onrender.com/api'
+const RENDER_API = 'https://zetrix-api.onrender.com/api';
+
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? LOCAL_API
+  : RENDER_API;
 
 const Api = {
 
@@ -126,8 +136,8 @@ const Api = {
     return this.get(`/admin/keys?${params}`, true);
   },
 
-  async adminCreateKeys(plan, days, count, note) {
-    return this.post('/admin/keys', { plan, days, count, note }, true);
+  async adminCreateKeys(plan, days, count, note, maxUses = 1) {
+    return this.post('/admin/keys', { plan, days, count, note, maxUses }, true);
   },
 
   async adminDeleteKey(id) {
@@ -157,3 +167,5 @@ const Api = {
     return this.del('/admin/reset', true);
   },
 };
+
+export { Api };

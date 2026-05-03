@@ -1,4 +1,4 @@
-import { ZAdmin, addLog } from './database.js';
+import { Api } from './api.js';
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,11 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function isAdminLoggedIn() {
-  return sessionStorage.getItem('zetrix_admin_session') === 'true';
+  const user = Api.getUser();
+  return sessionStorage.getItem('zetrix_admin_session') === 'true' && user && user.is_admin;
 }
 
 function getAdminLogin() {
-  return sessionStorage.getItem('zetrix_admin_login') || 'Admin';
+  const user = Api.getUser();
+  return user?.username || sessionStorage.getItem('zetrix_admin_login') || 'Admin';
 }
 
 // ===== LOGIN =====
@@ -51,18 +53,17 @@ async function handleAdminLogin(e) {
   btn.innerHTML = `<span class="btn-spinner"></span>Входим...`;
 
   try {
-    const ok = await ZAdmin.checkCredentials(login, password);
-    if (ok) {
+    const data = await Api.login(login, password);
+    if (data.user.is_admin) {
       sessionStorage.setItem('zetrix_admin_session', 'true');
-      sessionStorage.setItem('zetrix_admin_login', login);
+      sessionStorage.setItem('zetrix_admin_login', data.user.username);
       errEl.style.display = 'none';
-      await addLog('system', 'Вход в панель администратора', login);
       showPanel();
     } else {
       throw new Error('Неверный логин или пароль');
     }
   } catch (err) {
-    errEl.textContent   = err.message;
+    errEl.textContent   = err.message || 'Неверный логин или пароль';
     errEl.style.display = 'block';
     btn.disabled        = false;
     btn.textContent     = 'Войти';
@@ -78,6 +79,7 @@ window.handleAdminLogin = handleAdminLogin;
 function adminLogout() {
   sessionStorage.removeItem('zetrix_admin_session');
   sessionStorage.removeItem('zetrix_admin_login');
+  Api.logout();
   showLoginScreen();
 }
 window.adminLogout = adminLogout;
@@ -133,13 +135,14 @@ window.toggleSidebar = toggleSidebar;
 // ===== DASHBOARD =====
 async function renderDashboard() {
   try {
-    const stats = await ZAdmin.getStats();
+    const stats = await Api.adminStats();
     document.getElementById('statUsers').textContent  = stats.totalUsers;
     document.getElementById('statKeys').textContent   = stats.totalKeys;
     document.getElementById('statActive').textContent = stats.activeKeys;
     document.getElementById('statUsed').textContent   = stats.usedKeys;
 
-    const users = await ZAdmin.getUsers();
+    const usersData = await Api.adminGetUsers();
+    const users = usersData.users || [];
     const ul    = document.getElementById('recentUsersList');
     ul.innerHTML = users.slice(0, 5).map(u => `
       <div class="dash-list-item">
@@ -150,13 +153,14 @@ async function renderDashboard() {
         <span class="dli-badge ${planClass(u.plan)}">${u.plan || 'Нет'}</span>
       </div>`).join('') || '<div class="table-empty">Нет пользователей</div>';
 
-    const logs = await ZAdmin.getLogs();
+    const logsData = await Api.adminGetLogs();
+    const logs = logsData.logs || [];
     const ll   = document.getElementById('recentLogsList');
     ll.innerHTML = logs.slice(0, 5).map(l => `
       <div class="dash-list-item">
         <div>
           <div class="dli-name">${escHtml(l.event)}</div>
-          <div class="dli-meta">${escHtml(l.actor)} · ${formatTs(l.createdAt)}</div>
+          <div class="dli-meta">${escHtml(l.actor)} · ${formatTs(l.created_at)}</div>
         </div>
         <span class="log-type ${l.type}">${l.type}</span>
       </div>`).join('') || '<div class="table-empty">Нет событий</div>';
@@ -171,21 +175,22 @@ async function renderKeysTable(filter = keysFilter) {
   const tbody = document.getElementById('keysTableBody');
   tbody.innerHTML = `<tr><td colspan="7" class="table-empty">Загрузка...</td></tr>`;
   try {
-    const keys = await ZAdmin.getKeys(filter.search, filter.plan);
+    const data = await Api.adminGetKeys(filter.search, filter.plan);
+    const keys = data.keys || [];
     if (!keys.length) { tbody.innerHTML = `<tr><td colspan="8" class="table-empty">Ключи не найдены</td></tr>`; return; }
     tbody.innerHTML = keys.map(k => `
       <tr>
-        <td><span class="table-key">${escHtml(k.keyValue)}</span></td>
+        <td><span class="table-key">${escHtml(k.key_value)}</span></td>
         <td><span class="table-badge ${planClass(k.plan)}">${k.plan}</span></td>
         <td>${k.days > 0 ? k.days + ' дн.' : '∞'}</td>
         <td><span class="table-badge ${k.status}">${statusLabel(k.status)}</span></td>
-        <td>${(k.usedCount || 0)} / ${k.maxUses || 1}</td>
+        <td>${(k.used_count || 0)} / ${k.max_uses || 1}</td>
         <td>${escHtml(k.note || '—')}</td>
-        <td>${formatTs(k.createdAt)}</td>
+        <td>${formatTs(k.created_at)}</td>
         <td>
           <div class="table-actions">
-            <button class="tbl-btn copy" onclick="copyKey('${escHtml(k.keyValue)}')">${copyIcon()}</button>
-            <button class="tbl-btn danger" onclick="deleteKey('${k.id}','${escHtml(k.keyValue)}')">${trashIcon()}</button>
+            <button class="tbl-btn copy" onclick="copyKey('${escHtml(k.key_value)}')">${copyIcon()}</button>
+            <button class="tbl-btn danger" onclick="deleteKey('${k.id}','${escHtml(k.key_value)}')">${trashIcon()}</button>
           </div>
         </td>
       </tr>`).join('');
@@ -223,7 +228,8 @@ async function generateKeys() {
   const note  = document.getElementById('genNote').value.trim();
 
   try {
-    const created = await ZAdmin.createKeys(plan, days, count, note, maxUses);
+    const data = await Api.adminCreateKeys(plan, days, count, note, maxUses);
+    const created = data.created || [];
     await renderKeysTable();
     await renderDashboard();
     closeGenerateKey();
@@ -240,7 +246,7 @@ async function deleteKey(id, keyValue) {
   const ok = await ZModal.confirm({ title: 'Удалить ключ?', text: 'Ключ будет удалён из системы.', confirmText: 'Удалить', danger: true });
   if (!ok) return;
   try {
-    await ZAdmin.deleteKey(id, keyValue);
+    await Api.adminDeleteKey(id);
     await renderKeysTable();
     await renderDashboard();
     showAdminToast('Ключ удалён');
@@ -261,7 +267,8 @@ async function renderUsersTable(search = usersSearch) {
   const tbody = document.getElementById('usersTableBody');
   tbody.innerHTML = `<tr><td colspan="6" class="table-empty">Загрузка...</td></tr>`;
   try {
-    const users = await ZAdmin.getUsers(search);
+    const data = await Api.adminGetUsers(search);
+    const users = data.users || [];
     if (!users.length) { tbody.innerHTML = `<tr><td colspan="6" class="table-empty">Пользователи не найдены</td></tr>`; return; }
     tbody.innerHTML = users.map(u => `
       <tr>
@@ -276,10 +283,10 @@ async function renderUsersTable(search = usersSearch) {
         <td>${escHtml(u.email || '—')}</td>
         <td><span class="table-badge ${planClass(u.plan)}">${u.plan || 'Нет'}</span></td>
         <td>${u.expiry || '—'}</td>
-        <td>${u.keysCount || 0}</td>
+        <td>${u.keys_count || 0}</td>
         <td>
           <div class="table-actions">
-            <button class="tbl-btn" onclick="openUserEdit('${u.id}','${escHtml(u.username)}','${escHtml(u.email||'')}','${u.plan||''}','${u.expiry||''}')">${editIcon()}</button>
+            <button class="tbl-btn" onclick="openUserEdit('${u.id}','${escHtml(u.username)}','${escHtml(u.email||'')}', '${u.plan||''}','${u.expiry||''}')">${editIcon()}</button>
             <button class="tbl-btn danger" onclick="deleteUser('${u.id}','${escHtml(u.username)}')">${trashIcon()}</button>
           </div>
         </td>
@@ -322,7 +329,7 @@ async function saveUserEdit() {
     expiry:   document.getElementById('editExpiry').value,
   };
   try {
-    await ZAdmin.updateUser(id, data);
+    await Api.adminUpdateUser(id, data);
     await renderUsersTable();
     await renderDashboard();
     closeUserEdit();
@@ -335,7 +342,7 @@ async function deleteUser(id, username) {
   const ok = await ZModal.confirm({ title: `Удалить ${username}?`, text: 'Аккаунт будет удалён.', confirmText: 'Удалить', danger: true });
   if (!ok) return;
   try {
-    await ZAdmin.deleteUser(id, username);
+    await Api.adminDeleteUser(id);
     await renderUsersTable();
     await renderDashboard();
     showAdminToast('Пользователь удалён');
@@ -351,11 +358,12 @@ async function renderLogsTable(filter = logsFilter) {
   const tbody = document.getElementById('logsTableBody');
   tbody.innerHTML = `<tr><td colspan="5" class="table-empty">Загрузка...</td></tr>`;
   try {
-    const logs = await ZAdmin.getLogs(filter.type, filter.search);
+    const data = await Api.adminGetLogs(filter.type, filter.search);
+    const logs = data.logs || [];
     if (!logs.length) { tbody.innerHTML = `<tr><td colspan="5" class="table-empty">Логи не найдены</td></tr>`; return; }
     tbody.innerHTML = logs.map(l => `
       <tr>
-        <td style="white-space:nowrap;color:#4a4a5a;font-size:0.78rem">${formatTs(l.createdAt)}</td>
+        <td style="white-space:nowrap;color:#4a4a5a;font-size:0.78rem">${formatTs(l.created_at)}</td>
         <td><span class="log-type ${l.type}">${l.type}</span></td>
         <td style="color:#e2e2e8">${escHtml(l.event)}</td>
         <td>${escHtml(l.actor)}</td>
@@ -377,7 +385,7 @@ window.filterLogsByType = filterLogsByType;
 async function clearLogs() {
   const ok = await ZModal.confirm({ title: 'Очистить все логи?', text: 'Журнал будет очищен.', confirmText: 'Очистить', danger: true });
   if (!ok) return;
-  try { await ZAdmin.clearLogs(); await renderLogsTable(); showAdminToast('Логи очищены'); }
+  try { await Api.adminClearLogs(); await renderLogsTable(); showAdminToast('Логи очищены'); }
   catch (err) { showAdminToast(err.message, 'error'); }
 }
 window.clearLogs = clearLogs;
@@ -393,7 +401,7 @@ async function saveAdminCreds() {
   if (newPass !== confirm)              { showAdminToast('Пароли не совпадают', 'error'); return; }
 
   try {
-    await ZAdmin.updateCredentials(newLogin, newPass);
+    await Api.adminUpdateCredentials(newLogin, newPass);
     sessionStorage.setItem('zetrix_admin_login', newLogin);
     document.getElementById('topbarAdminName').textContent = newLogin;
     document.getElementById('newAdminLogin').value         = '';
@@ -407,7 +415,7 @@ window.saveAdminCreds = saveAdminCreds;
 async function resetAllKeys() {
   const ok = await ZModal.confirm({ title: 'Сбросить все ключи?', text: 'Все ключи будут удалены.', confirmText: 'Сбросить', danger: true });
   if (!ok) return;
-  try { await ZAdmin.deleteAllKeys(); await renderKeysTable(); await renderDashboard(); showAdminToast('Все ключи удалены'); }
+  try { await Api.adminDeleteAllKeys(); await renderKeysTable(); await renderDashboard(); showAdminToast('Все ключи удалены'); }
   catch (err) { showAdminToast(err.message, 'error'); }
 }
 window.resetAllKeys = resetAllKeys;
@@ -415,7 +423,7 @@ window.resetAllKeys = resetAllKeys;
 async function resetAllUsers() {
   const ok = await ZModal.confirm({ title: 'Удалить всех пользователей?', text: 'Все аккаунты будут удалены.', confirmText: 'Удалить', danger: true });
   if (!ok) return;
-  try { await ZAdmin.deleteAllUsers(); await renderUsersTable(); await renderDashboard(); showAdminToast('Пользователи удалены'); }
+  try { await Api.adminDeleteAllUsers(); await renderUsersTable(); await renderDashboard(); showAdminToast('Пользователи удалены'); }
   catch (err) { showAdminToast(err.message, 'error'); }
 }
 window.resetAllUsers = resetAllUsers;
@@ -423,7 +431,7 @@ window.resetAllUsers = resetAllUsers;
 async function fullReset() {
   const ok = await ZModal.confirm({ title: 'Полный сброс?', text: 'Все данные будут удалены. Необратимо.', confirmText: 'Сбросить всё', danger: true });
   if (!ok) return;
-  try { await ZAdmin.fullReset(); await renderDashboard(); await renderKeysTable(); await renderUsersTable(); await renderLogsTable(); showAdminToast('Система сброшена'); }
+  try { await Api.adminFullReset(); await renderDashboard(); await renderKeysTable(); await renderUsersTable(); await renderLogsTable(); showAdminToast('Система сброшена'); }
   catch (err) { showAdminToast(err.message, 'error'); }
 }
 window.fullReset = fullReset;
@@ -443,7 +451,8 @@ function escHtml(str) {
 }
 function formatTs(ts) {
   if (!ts) return '—';
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const d = new Date(ts);
+  if (isNaN(d)) return '—';
   return d.toLocaleString('ru-RU');
 }
 function trashIcon() { return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`; }

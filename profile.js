@@ -1,48 +1,48 @@
-import { ZAuth, ZKeys, addLog } from './database.js';
-import { auth } from './firebase-config.js';
+import { Api } from './api.js';
 
 let currentUser = null;
 
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
-  ZAuth.onAuthChange(async (firebaseUser) => {
-    // Admin session check — admin uses sessionStorage, not Firebase Auth
-    const adminSession = sessionStorage.getItem('zetrix_admin_session') === 'true';
-    if (adminSession) {
-      currentUser = {
-        username: sessionStorage.getItem('zetrix_admin_login') || 'Admin',
-        email: '',
-        plan: 'Администратор',
-        expiry: '∞',
-        isAdmin: true,
-        keysCount: 0,
-        uid: 'admin'
-      };
-      renderProfile();
-      renderActivity();
-      renderKeysHistory();
-      setupAdminView();
-      return;
-    }
+document.addEventListener('DOMContentLoaded', async () => {
+  const adminSession = sessionStorage.getItem('zetrix_admin_session') === 'true';
 
-    if (!firebaseUser) {
-      window.location.href = 'login.html';
-      return;
-    }
-
-    try {
-      currentUser = await ZAuth.getProfile(firebaseUser.uid);
-    } catch (err) {
-      showProfileError(err.message || 'Ошибка загрузки профиля');
-      return;
-    }
-
-    if (!currentUser) { window.location.href = 'login.html'; return; }
-
+  if (adminSession) {
+    currentUser = {
+      username: sessionStorage.getItem('zetrix_admin_login') || 'Admin',
+      email: '',
+      plan: 'Администратор',
+      expiry: '∞',
+      isAdmin: true,
+      keysCount: 0,
+      uid: 'admin'
+    };
     renderProfile();
     renderActivity();
     renderKeysHistory();
-  });
+    setupAdminView();
+    return;
+  }
+
+  if (!Api.isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  try {
+    currentUser = await Api.getMe();
+  } catch (err) {
+    showProfileError(err.message || 'Ошибка загрузки профиля');
+    return;
+  }
+
+  if (!currentUser) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  renderProfile();
+  renderActivity();
+  renderKeysHistory();
 });
 
 function setupAdminView() {
@@ -97,7 +97,7 @@ function renderProfile() {
   document.getElementById('profilePlan').innerHTML       = `<span class="plan-dot ${u.plan !== 'Нет' ? 'active' : ''}"></span> ${u.plan}`;
   document.getElementById('ovPlan').textContent          = u.plan;
   document.getElementById('ovExpiry').textContent        = u.expiry || '—';
-  document.getElementById('ovKeys').textContent          = u.keysCount || 0;
+  document.getElementById('ovKeys').textContent          = u.keys_count || 0;
   document.getElementById('subBadge').textContent        = u.plan;
   document.getElementById('subExpiry').textContent       = u.expiry || '—';
   document.getElementById('settingsUsername').value      = u.username;
@@ -105,7 +105,7 @@ function renderProfile() {
 
   // Show admin button only for admin
   const adminBtn = document.getElementById('adminNavBtn');
-  if (adminBtn && u.isAdmin) adminBtn.style.display = 'inline-flex';
+  if (adminBtn && u.is_admin) adminBtn.style.display = 'inline-flex';
 }
 
 // ===== TAB SWITCHING =====
@@ -173,7 +173,7 @@ async function activateKey(e) {
   btn.disabled = true;
 
   try {
-    const result = await ZKeys.activate(key, auth.currentUser.uid);
+    const result = await Api.activateKey(key);
     currentUser = result.user;
     keyInput.value = key;
 
@@ -185,7 +185,7 @@ async function activateKey(e) {
     // Update UI
     document.getElementById('ovPlan').textContent    = result.plan;
     document.getElementById('ovExpiry').textContent  = result.expiry;
-    document.getElementById('ovKeys').textContent    = currentUser.keysCount;
+    document.getElementById('ovKeys').textContent    = currentUser.keys_count || 0;
     document.getElementById('profilePlan').innerHTML = `<span class="plan-dot active"></span> ${result.plan}`;
     document.getElementById('subBadge').textContent  = result.plan;
     document.getElementById('subExpiry').textContent = result.expiry;
@@ -219,17 +219,18 @@ function showKeyResult(type, msg) {
 async function renderKeysHistory() {
   const list = document.getElementById('keysHistoryList');
   try {
-    const history = await ZKeys.getHistory(auth.currentUser.uid);
+    const data = await Api.getKeyHistory();
+    const history = data.history || [];
     if (!history.length) {
       list.innerHTML = '<div class="activity-empty">Нет активированных ключей</div>';
       return;
     }
     list.innerHTML = history.map(item => {
-      const date = item.activatedAt?.toDate?.()?.toLocaleDateString('ru-RU') || '—';
+      const date = item.activated_at ? new Date(item.activated_at).toLocaleDateString('ru-RU') : '—';
       return `
         <div class="key-history-item">
           <div class="kh-left">
-            <div class="kh-key">${maskKey(item.keyValue)}</div>
+            <div class="kh-key">${maskKey(item.key_value)}</div>
             <div class="kh-meta">${item.plan} · Активирован ${date}</div>
           </div>
           <div class="kh-right">
@@ -253,13 +254,14 @@ async function renderActivity() {
   // Use key history as activity feed
   const list = document.getElementById('activityList');
   try {
-    const history = await ZKeys.getHistory(auth.currentUser.uid);
+    const data = await Api.getKeyHistory();
+    const history = data.history || [];
     if (!history.length) {
       list.innerHTML = '<div class="activity-empty">Активность пока отсутствует</div>';
       return;
     }
     list.innerHTML = history.slice(0, 5).map(a => {
-      const date = a.activatedAt?.toDate?.()?.toLocaleString('ru-RU') || '—';
+      const date = a.activated_at ? new Date(a.activated_at).toLocaleString('ru-RU') : '—';
       return `
         <div class="activity-item">
           <span class="activity-dot"></span>
@@ -279,7 +281,7 @@ async function saveSettings(e) {
   const email    = document.getElementById('settingsEmail').value.trim();
 
   try {
-    await ZAuth.updateProfile(auth.currentUser.uid, { username, email });
+    await Api.updateProfile(username, email);
     currentUser.username = username;
     document.getElementById('profileUsername').textContent = username;
     document.getElementById('avatarLetter').textContent    = username.charAt(0).toUpperCase();
@@ -300,7 +302,7 @@ async function changePassword(e) {
   if (newPass.length < 8)  { showToast('Минимум 8 символов', 'error'); return; }
 
   try {
-    await ZAuth.changePassword(current, newPass);
+    await Api.changePassword(current, newPass);
     showToast('Пароль изменён', 'success');
     e.target.reset();
   } catch (err) {
@@ -318,11 +320,8 @@ async function confirmDelete() {
   });
   if (!ok) return;
 
-  const password = prompt('Введите пароль для подтверждения:');
-  if (!password) return;
-
   try {
-    await ZAuth.deleteAccount(password);
+    await Api.deleteAccount();
     window.location.href = 'index.html';
   } catch (err) {
     showToast(err.message, 'error');
